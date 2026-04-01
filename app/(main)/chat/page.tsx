@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { MessageBubble, type ChatMessage } from "@/components/chat/message-bubble";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatInput } from "@/components/chat/chat-input";
+import { useLanguage } from "@/components/providers/language-provider";
 import { PaymentSheet } from "@/components/chat/payment-sheet";
 
 function genId() {
@@ -140,7 +141,14 @@ export default function ChatPage() {
 
 function ChatContent() {
   const searchParams = useSearchParams();
-  const [messages, setMessages] = useState<ChatMessage[]>(WELCOME);
+  const { t } = useLanguage();
+
+  const welcomeMessages: ChatMessage[] = [
+    { id: "w1", role: "assistant", content: t("chat.welcome"), type: "text" },
+    { id: "w2", role: "assistant", content: null, type: "chips", metadata: { chips: [t("chat.chipTrain"), t("chat.chipBus"), t("chat.chipFlight"), t("chat.chipHotel")] } },
+  ];
+
+  const [messages, setMessages] = useState<ChatMessage[]>(welcomeMessages);
   const [isLoading, setIsLoading] = useState(false);
   const [typingLabel, setTypingLabel] = useState<string | null>(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
@@ -331,7 +339,7 @@ function ChatContent() {
       </div>
 
       {/* Input */}
-      <ChatInput onSend={handleSend} disabled={isLoading} />
+      <ChatInput onSend={handleSend} disabled={isLoading} placeholder={t("chat.placeholder")} />
 
       {/* Payment */}
       <PaymentSheet

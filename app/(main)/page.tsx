@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks/use-user";
+import { useLanguage } from "@/components/providers/language-provider";
 
 const AGENT_API = process.env.NEXT_PUBLIC_AGENT_URL || "http://localhost:8000";
 
@@ -37,6 +38,7 @@ const FEATURES = [
 
 export default function HomePage() {
   const { user } = useUser();
+  const { t } = useLanguage();
   const [agentStatus, setAgentStatus] = useState<"checking" | "online" | "offline">("checking");
 
   useEffect(() => {
@@ -50,10 +52,10 @@ export default function HomePage() {
       {/* Hero */}
       <div className="mb-8">
         <h2 className="font-[family-name:var(--font-instrument-serif)] text-3xl lg:text-4xl">
-          Namaste{user?.name ? `, ${user.name}` : ""}! <span className="opacity-80">{"\u{1F64F}"}</span>
+          {t("home.greeting")}{user?.name ? `, ${user.name}` : ""}! <span className="opacity-80">{"\u{1F64F}"}</span>
         </h2>
         <p className="mt-2 text-base text-muted">
-          Book trains, buses & flights through conversation. No forms, no confusion \u2014 just tell me where you want to go.
+          {t("home.subtitle")}
         </p>
 
         {/* Agent status */}
@@ -86,8 +88,8 @@ export default function HomePage() {
         {/* Upcoming Trips */}
         <div className="lg:col-span-2">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">Upcoming Trips</h3>
-            <Link href="/bookings" className="text-xs font-medium text-primary hover:underline">View all</Link>
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-muted">{t("home.upcomingTrips")}</h3>
+            <Link href="/bookings" className="text-xs font-medium text-primary hover:underline">{t("home.viewAll")}</Link>
           </div>
           <div className="space-y-3">
             {MOCK_TRIPS.map((trip) => (
@@ -109,7 +111,7 @@ export default function HomePage() {
           </div>
 
           {/* Features */}
-          <h3 className="mt-8 mb-4 text-sm font-semibold uppercase tracking-wider text-muted">Why YatraAI?</h3>
+          <h3 className="mt-8 mb-4 text-sm font-semibold uppercase tracking-wider text-muted">{t("home.whyYatraAI")}</h3>
           <div className="grid grid-cols-2 gap-3">
             {FEATURES.map((f) => (
               <div key={f.title} className="rounded-2xl border border-border bg-card p-4">
@@ -126,15 +128,15 @@ export default function HomePage() {
           <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-muted">AI Assistant</h3>
           <div className="rounded-2xl border border-border bg-card p-6">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary to-primary text-lg font-bold text-white">Y</div>
-            <h4 className="font-[family-name:var(--font-instrument-serif)] text-lg">Talk to YatraAI</h4>
+            <h4 className="font-[family-name:var(--font-instrument-serif)] text-lg">{t("home.talkToAgent")}</h4>
             <p className="mt-1 mb-5 text-sm text-muted">
-              Tell me where you want to go \u2014 I'll handle the booking, find stays, and plan your trip. Just like talking to a friend.
+              {t("home.agentDesc")}
             </p>
             <Link
               href="/chat"
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
             >
-              Start a Conversation
+              {t("home.startChat")}
             </Link>
 
             {/* Example prompts */}

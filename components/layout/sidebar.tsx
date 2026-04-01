@@ -2,17 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLanguage } from "@/components/providers/language-provider";
 
 const NAV_ITEMS = [
-  { href: "/", label: "Home", icon: HomeIcon },
-  { href: "/chat", label: "Chat", icon: ChatIcon },
-  { href: "/bookings", label: "Trips", icon: TicketIcon },
-  { href: "/stays", label: "Stays", icon: BuildingIcon },
-  { href: "/profile", label: "Profile", icon: UserIcon },
+  { href: "/", labelKey: "nav.home", icon: HomeIcon },
+  { href: "/chat", labelKey: "nav.chat", icon: ChatIcon },
+  { href: "/bookings", labelKey: "nav.trips", icon: TicketIcon },
+  { href: "/stays", labelKey: "nav.stays", icon: BuildingIcon },
+  { href: "/profile", labelKey: "nav.profile", icon: UserIcon },
 ] as const;
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { t } = useLanguage();
 
   return (
     <>
@@ -33,7 +35,7 @@ export function Sidebar() {
 
         {/* Nav items */}
         <nav className="flex-1 px-3 py-4 space-y-1">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ href, labelKey, icon: Icon }) => {
             const isActive =
               href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
@@ -47,7 +49,7 @@ export function Sidebar() {
                 }`}
               >
                 <Icon active={isActive} />
-                {label}
+                {t(labelKey)}
               </Link>
             );
           })}
@@ -71,7 +73,7 @@ export function Sidebar() {
       {/* Mobile bottom nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 border-t bg-card border-border">
         <div className="flex items-center justify-around py-2 pb-[env(safe-area-inset-bottom)]">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ href, labelKey, icon: Icon }) => {
             const isActive =
               href === "/" ? pathname === "/" : pathname.startsWith(href);
             return (
@@ -85,7 +87,7 @@ export function Sidebar() {
                 }`}
               >
                 <Icon active={isActive} />
-                {label}
+                {t(labelKey)}
               </Link>
             );
           })}

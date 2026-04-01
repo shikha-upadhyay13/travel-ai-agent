@@ -1,24 +1,29 @@
 "use client";
 
+import { useState } from "react";
 import { useTheme } from "@/components/providers/theme-provider";
+import { useLanguage } from "@/components/providers/language-provider";
+import { LANG_LABELS, type Lang } from "@/lib/i18n/translations";
 
 interface HeaderProps {
   title?: string;
 }
 
+const LANGS: Lang[] = ["en", "hi", "te"];
+
 export function Header({ title = "YatraAI" }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const { lang, setLang } = useLanguage();
+  const [langOpen, setLangOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-card px-6 py-3">
-      {/* Mobile: show logo; Desktop: show page context */}
+      {/* Mobile logo */}
       <div className="flex items-center gap-2.5 md:hidden">
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-secondary to-primary text-xs font-bold text-white">
           Y
         </div>
-        <h1 className="font-[family-name:var(--font-instrument-serif)] text-lg">
-          {title}
-        </h1>
+        <h1 className="font-[family-name:var(--font-instrument-serif)] text-lg">{title}</h1>
       </div>
       <div className="hidden md:block">
         <h1 className="text-sm font-semibold text-foreground">{title}</h1>
@@ -26,9 +31,34 @@ export function Header({ title = "YatraAI" }: HeaderProps) {
 
       {/* Right actions */}
       <div className="flex items-center gap-1.5">
-        <button className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted hover:bg-input-bg hover:text-foreground transition-colors">
-          EN
-        </button>
+        {/* Language switcher */}
+        <div className="relative">
+          <button
+            onClick={() => setLangOpen(!langOpen)}
+            className="rounded-lg px-2.5 py-1.5 text-xs font-medium text-muted hover:bg-input-bg hover:text-foreground transition-colors"
+          >
+            {LANG_LABELS[lang]}
+          </button>
+          {langOpen && (
+            <>
+              <div className="fixed inset-0 z-30" onClick={() => setLangOpen(false)} />
+              <div className="absolute right-0 top-full mt-1 z-40 w-36 rounded-xl border border-border bg-card p-1 shadow-lg">
+                {LANGS.map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => { setLang(l); setLangOpen(false); }}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors ${
+                      lang === l ? "bg-primary-light text-primary font-medium" : "text-foreground hover:bg-input-bg"
+                    }`}
+                  >
+                    {LANG_LABELS[l]}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
         <button className="flex h-8 w-8 items-center justify-center rounded-lg text-muted hover:bg-input-bg hover:text-foreground transition-colors">
           <MicIcon />
         </button>
