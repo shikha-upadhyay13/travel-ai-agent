@@ -1,227 +1,90 @@
-# TravelAI Agent
+# YatraAI — AI Travel Booking Agent
 
-An AI-powered travel assistant that helps users book flights, trains, and buses through natural language conversation. Supports voice input in English, Hindi, Telugu, and Marathi with real-time streaming responses.
+> Book trains, buses & flights through conversation. No forms, no confusion — just tell me where you want to go.
+
+YatraAI is a conversational AI travel booking platform built with **Next.js 15** and a **Python FastAPI** agent service. It supports multilingual conversations (English, Hindi, Telugu), an agentic chat interface with rich UI cards, UPI payment flow, and persistent booking management.
 
 ## Features
 
-- **Multi-turn booking** — Conversational slot-filling for flight, train, and bus bookings
-- **RAG-powered Q&A** — Answers travel questions from a FAISS-indexed knowledge base (50+ facts)
-- **Multilingual** — Accepts text/voice in Hindi, Telugu, Marathi (auto-translates to English)
-- **Voice input** — Browser-based speech recognition via Web Speech API
-- **Streaming responses** — Real-time token-by-token output via Server-Sent Events
-- **Modern UI** — Dark/light theme, responsive design, chat persistence, streaming cursor
-- **Booking management** — Search, select, confirm, and cancel bookings with reference tracking
-- **Booking history** — Side panel showing all past bookings with status badges
-- **SQLite persistence** — Conversations, bookings, and sessions survive server restarts
-- **Knowledge base hot-reload** — Update travel facts without restarting the server
-- **Groq fallback** — Cloud LLM backup when Ollama is unavailable
-- **Docker support** — One-command deployment with docker-compose
-
-## Architecture
-
-```
-User (Text/Voice) --> Frontend (HTML/JS/SSE) --> FastAPI Backend
-                                                      |
-                      +-------------------------------+
-                      v                               v
-                Translation                  Intent Classification
-                (Ollama)                       (Ollama + Context)
-                      |                               |
-                      v                               v
-              +---------------+--------------+----------------+
-              | Booking Flow  | RAG Query    | Chat / Support |
-              | (Slot Fill +  | (FAISS +     | (LLM-powered   |
-              |  Confirm +    |  Ollama)     |  responses)    |
-              |  DB Save)     |              |                |
-              +-------+-------+------+-------+----------------+
-                      v              v
-               Mock Services   Knowledge Base       SQLite DB
-               (Flight/Train   (50+ facts,        (Conversations,
-                /Bus search)    hot-reloadable)     Bookings,
-                                                    Sessions)
-```
+- **Agentic Chat UI** — Rich message bubbles, train/bus/flight result cards, quick reply chips, typing indicators
+- **Smart Demo Mode** — Full interactive booking flow works without any backend
+- **Phone OTP Auth** — Login with phone number, JWT sessions, user profiles
+- **Booking System** — Create, view, cancel bookings with PNR generation
+- **Payment Flow** — Mock UPI payment with Razorpay-ready architecture
+- **Multilingual** — English, Hindi (हिंदी), Telugu (తెలుగు) — switchable from header
+- **Dark/Light Theme** — Toggle from header or profile settings
+- **Responsive** — Desktop sidebar + mobile bottom nav
+- **PWA Ready** — Installable on mobile/desktop
 
 ## Tech Stack
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Backend | FastAPI (Python 3.10) | Async web framework |
-| LLM | Ollama (llama3, local) | Intent classification, entity extraction, chat |
-| LLM Fallback | Groq API (free tier) | Cloud backup when Ollama is down |
-| Embeddings | all-MiniLM-L6-v2 | 384-dim semantic search |
-| Vector DB | FAISS (IndexFlatL2) | In-memory similarity search |
-| Database | SQLite (WAL mode) | Persistent storage |
-| Frontend | Vanilla HTML/CSS/JS | No build step required |
-| Voice | Web Speech API | Browser-native speech recognition |
-| Streaming | Server-Sent Events | Real-time response streaming |
-| Container | Docker + Compose | Production deployment |
+| Layer | Technology |
+|-------|-----------|
+| Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS 4 |
+| Database | SQLite via Drizzle ORM (PostgreSQL-ready) |
+| Auth | Phone OTP + JWT (jose) |
+| AI Agent | Python FastAPI + Groq (llama-3.3-70b) |
+| RAG | FAISS + sentence-transformers |
+| Payments | Mock (Razorpay-ready) |
 
-All core tools are free and open-source.
+## Getting Started
 
-## Setup
-
-### Prerequisites
-- Python 3.10+
-- [Ollama](https://ollama.com) installed and running
-
-### Install
+### 1. Install & Run (Next.js)
 
 ```bash
-# Clone and enter project
-cd travel-ai-agent
+npm install
+npm run dev
+```
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate          # Windows
-# source venv/bin/activate     # Linux/Mac
+Open [http://localhost:3000](http://localhost:3000). Login with any phone number, OTP is `000000` in dev mode.
 
-# Install dependencies
+### 2. Run Python Agent (Optional)
+
+The app works in demo mode without the agent. To enable live AI responses:
+
+```bash
+cd services/agent
 pip install -r requirements.txt
-
-# Pull the LLM model
-ollama pull llama3
-```
-
-### Run
-
-```bash
-# Start Ollama (if not running)
-ollama serve
-
-# Start the app
-uvicorn app.main:app --reload --port 8000
-```
-
-Open http://localhost:8000 in your browser.
-
-### Docker
-
-```bash
-# Start everything (app + Ollama)
-docker-compose up -d
-
-# Pull the model into the Ollama container
-docker exec travel-ollama ollama pull llama3
-
-# Open http://localhost:8000
-```
-
-### Run Tests
-
-```bash
-pytest tests/ -v
-```
-
-82 tests covering slot management, services, database, state, and API endpoints.
-
-### Environment Variables
-
-Copy `.env.example` to `.env` and configure:
-
-```bash
-cp .env.example .env
-```
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `OLLAMA_URL` | `http://localhost:11434/api/generate` | Ollama API endpoint |
-| `OLLAMA_MODEL` | `llama3` | Model name |
-| `LLM_TIMEOUT` | `60` | Request timeout (seconds) |
-| `LLM_MAX_RETRIES` | `2` | Retry count on failure |
-| `GROQ_API_KEY` | *(empty)* | Optional Groq fallback key |
-| `DB_PATH` | `travel_agent.db` | SQLite database path |
-| `CORS_ORIGINS` | `http://localhost:8000` | Allowed CORS origins |
-| `RATE_LIMIT_MAX` | `20` | Max requests per window |
-| `RATE_LIMIT_WINDOW` | `60` | Rate limit window (seconds) |
-| `LOG_LEVEL` | `INFO` | Logging level |
-
-## API Endpoints
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Serves the chat UI |
-| POST | `/chat` | Standard chat endpoint |
-| POST | `/chat/stream` | Streaming chat (SSE) |
-| GET | `/health` | Health check (API, Ollama, RAG) |
-| GET | `/bookings/{user_id}` | List user's bookings |
-| GET | `/bookings/detail/{ref}` | Booking details |
-| POST | `/bookings/confirm` | Confirm a booking |
-| POST | `/bookings/cancel` | Cancel a booking |
-| GET | `/quick-actions` | Dynamic quick actions |
-| POST | `/admin/reload-kb` | Hot-reload knowledge base |
-| GET | `/admin/kb-stats` | Knowledge base statistics |
-
-### POST /chat
-
-```json
-// Request
-{
-  "user_id": "user_abc123",
-  "message": "Book a flight from Delhi to Mumbai tomorrow"
-}
-
-// Response (slot filling)
-{
-  "reply": "I'll search for flights from Delhi to Mumbai on 2026-03-31. Shall I proceed? (yes/no)"
-}
-
-// Response (with results)
-{
-  "reply": "Here are the available flight options:",
-  "data": {
-    "mode": "flight",
-    "source": "Delhi",
-    "destination": "Mumbai",
-    "date": "2026-03-31",
-    "results": [...],
-    "booking_ref": "BK-FL-20260330-A1B2C3"
-  }
-}
+# Set your Groq API key
+echo "GROQ_API_KEY=gsk_your_key_here" > .env
+python -m uvicorn app.main:app --port 8000
 ```
 
 ## Project Structure
 
 ```
-travel-ai-agent/
-├── app/
-│   ├── main.py                    # FastAPI app, lifespan (DB + RAG init)
-│   ├── config.py                  # Centralized config
-│   ├── api/
-│   │   ├── chat.py                # POST /chat
-│   │   ├── stream.py              # POST /chat/stream (SSE)
-│   │   ├── health.py              # GET /health
-│   │   ├── bookings.py            # Booking CRUD
-│   │   └── actions.py             # Quick actions + KB admin
-│   ├── core/
-│   │   ├── intent_router.py       # Intent classification
-│   │   ├── slot_manager.py        # Slot extraction + validation
-│   │   ├── state_manager.py       # In-memory conversation state
-│   │   └── rate_limiter.py        # Rate limiting
-│   ├── services/
-│   │   ├── llm_service.py         # LLM extraction + chat generation
-│   │   ├── translation_service.py # Multilingual translation
-│   │   ├── groq_service.py        # Groq API fallback
-│   │   ├── flight_service.py      # Mock flight search
-│   │   ├── train_service.py       # Mock train search
-│   │   └── bus_service.py         # Mock bus search
-│   ├── db/
-│   │   └── database.py            # SQLite operations
-│   └── rag/
-│       └── knowledge_base/
-│           ├── embedding_service.py
-│           ├── vector_store.py
-│           ├── rag_pipeline.py
-│           └── travel_docs.txt
-├── frontend/
-│   ├── index.html
-│   ├── css/styles.css
-│   └── js/
-│       ├── app.js
-│       └── voice.js
-├── tests/                         # 82 tests
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-├── .env.example
-└── .gitignore
+├── app/                    # Next.js App Router
+│   ├── (auth)/login/       # Phone OTP login
+│   ├── (main)/             # Main app (sidebar + header)
+│   │   ├── page.tsx        # Home
+│   │   ├── chat/           # Agentic chat interface
+│   │   ├── bookings/       # Trip management
+│   │   ├── stays/          # Accommodation browser
+│   │   └── profile/        # User settings
+│   └── api/                # API routes (auth, chat, bookings, payment)
+├── components/
+│   ├── chat/               # MessageBubble, TrainCard, QuickChips, PaymentSheet
+│   ├── layout/             # Sidebar, Header, BottomNav
+│   ├── providers/          # Theme, Language contexts
+│   └── ui/                 # Button, Card, Badge, ErrorBoundary
+├── lib/
+│   ├── auth/               # OTP, JWT sessions
+│   ├── db/                 # Drizzle schema + SQLite client
+│   ├── hooks/              # use-chat, use-user
+│   └── i18n/               # Translations (en/hi/te)
+├── services/agent/         # Python FastAPI AI agent
+│   ├── app/api/            # /agent/chat, /agent/chat/stream
+│   ├── app/core/           # Intent router, slot manager, state machine
+│   ├── app/services/       # Groq LLM, translation, transport search
+│   └── app/rag/            # FAISS knowledge base
+└── docs/                   # PRD + UI Design specs
 ```
+
+## Demo Flow
+
+1. Login with phone → OTP `000000`
+2. Chat: "Book a train" → see 3 train cards → select one
+3. Payment sheet → Pay → Booking confirmed with PNR
+4. Trips tab → view/cancel bookings
+5. Switch language → हिंदी or తెలుగు
+6. Toggle dark mode

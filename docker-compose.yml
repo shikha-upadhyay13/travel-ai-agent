@@ -1,9 +1,50 @@
 version: "3.8"
 
 services:
+  # Next.js frontend + API gateway
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: yatraai-web
+    ports:
+      - "3000:3000"
+    environment:
+      - AGENT_URL=http://agent:8000
+      - NEXT_PUBLIC_AGENT_URL=http://localhost:8000
+      - JWT_SECRET=${JWT_SECRET:-yatraai-docker-secret}
+      - DB_PATH=/app/data/yatraai.db
+    volumes:
+      - web_data:/app/data
+    depends_on:
+      - agent
+    restart: unless-stopped
+
+  # Python AI agent service
+  agent:
+    build:
+      context: ./services/agent
+      dockerfile: Dockerfile
+    container_name: yatraai-agent
+    ports:
+      - "8000:8000"
+    environment:
+      - OLLAMA_URL=http://ollama:11434/api/generate
+      - OLLAMA_MODEL=llama3
+      - GROQ_API_KEY=${GROQ_API_KEY:-}
+      - DB_PATH=/app/data/travel_agent.db
+      - CORS_ORIGINS=http://localhost:3000,http://web:3000
+      - LOG_LEVEL=INFO
+    volumes:
+      - agent_data:/app/data
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+  # Local LLM (optional — Groq is primary)
   ollama:
     image: ollama/ollama:latest
-    container_name: travel-ollama
+    container_name: yatraai-ollama
     ports:
       - "11434:11434"
     volumes:
@@ -14,24 +55,7 @@ services:
         reservations:
           memory: 4G
 
-  app:
-    build: .
-    container_name: travel-ai-agent
-    ports:
-      - "8000:8000"
-    environment:
-      - OLLAMA_URL=http://ollama:11434/api/generate
-      - OLLAMA_MODEL=llama3
-      - DB_PATH=/app/data/travel_agent.db
-      - LOG_LEVEL=INFO
-      - CORS_ORIGINS=http://localhost:8000
-      - GROQ_API_KEY=${GROQ_API_KEY:-}
-    volumes:
-      - app_data:/app/data
-    depends_on:
-      - ollama
-    restart: unless-stopped
-
 volumes:
+  web_data:
+  agent_data:
   ollama_data:
-  app_data:
