@@ -145,6 +145,7 @@ function ChatContent() {
   const [typingLabel, setTypingLabel] = useState<string | null>(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [phase, setPhase] = useState<"idle" | "results" | "confirmed">("idle");
+  const [lastSelectedTrain, setLastSelectedTrain] = useState<{ name: string; number: string; price: number; mode: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const flowRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const initialSent = useRef(false);
@@ -208,9 +209,14 @@ function ChatContent() {
 
     const lower = text.toLowerCase();
 
-    // Handle booking confirmation
+    // Handle booking confirmation — extract train name for payment
     const isConfirm = lower.includes("book ") || lower.includes("\u2705") || lower.includes("confirm") || lower.includes("yes");
     if (isConfirm && phase === "results") {
+      // Try to find which option was selected
+      const allResults = [...DEMO_TRAINS, ...DEMO_BUSES, ...DEMO_FLIGHTS];
+      const selected = allResults.find((r) => lower.includes(r.name.toLowerCase()));
+      const mode = DEMO_TRAINS.some((t) => t === selected) ? "train" : DEMO_BUSES.some((b) => b === selected) ? "bus" : "flight";
+      setLastSelectedTrain(selected ? { name: selected.name, number: selected.number, price: selected.price, mode } : { name: "AP Express", number: "12724", price: 620, mode: "train" });
       setPaymentOpen(true);
       return;
     }
@@ -249,13 +255,60 @@ function ChatContent() {
 
   const handleChipClick = useCallback((chip: string) => handleSend(chip), [handleSend]);
 
-  const handlePay = useCallback(() => {
+  const handlePay = useCallback(async () => {
     setPaymentOpen(false);
     setPhase("confirmed");
-    // Add user message for payment
     setMessages((prev) => [...prev, { id: genId(), role: "user", content: "Payment completed \u2705", type: "text" }]);
+    setIsLoading(true);
+    setTypingLabel("Processing payment...");
+
+    try {
+      // 1. Create booking in DB
+      const train = lastSelectedTrain || { name: "AP Express", number: "12724", price: 620, mode: "train" };
+      const bookingRes = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: train.mode,
+          source: "Hyderabad",
+          destination: "New Delhi",
+          travelDate: new Date(Date.now() + 86400000).toISOString().split("T")[0],
+          selectedOption: train,
+          totalPrice: train.price,
+        }),
+      });
+      const { booking } = await bookingRes.json();
+
+      if (booking) {
+        // 2. Create payment order
+        const payRes = await fetch("/api/payment/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: booking.id, amount: train.price }),
+        });
+        const payData = await payRes.json();
+
+        // 3. Verify payment (mock — always succeeds)
+        const verifyRes = await fetch("/api/payment/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bookingId: booking.id, orderId: payData.orderId }),
+        });
+        const { pnr } = await verifyRes.json();
+
+        // Update demo booking data with real PNR
+        DEMO_BOOKING.pnr = pnr;
+        DEMO_BOOKING.trainName = train.name;
+        DEMO_BOOKING.price = train.price;
+      }
+    } catch (err) {
+      console.error("Booking creation error:", err);
+    }
+
+    setIsLoading(false);
+    setTypingLabel(null);
     runFlow(buildConfirmFlow());
-  }, [runFlow]);
+  }, [runFlow, lastSelectedTrain]);
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col">
@@ -282,8 +335,8 @@ function ChatContent() {
 
       {/* Payment */}
       <PaymentSheet
-        amount={620}
-        description="AP Express \u00B7 Sleeper \u00B7 7 Apr"
+        amount={lastSelectedTrain?.price || 620}
+        description={`${lastSelectedTrain?.name || "AP Express"} \u00B7 Sleeper \u00B7 7 Apr`}
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
         onPay={handlePay}
