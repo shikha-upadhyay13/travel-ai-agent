@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useUser } from "@/lib/hooks/use-user";
 
 const AGENT_API = process.env.NEXT_PUBLIC_AGENT_URL || "http://localhost:8000";
 
@@ -35,6 +36,7 @@ const FEATURES = [
 ];
 
 export default function HomePage() {
+  const { user } = useUser();
   const [agentStatus, setAgentStatus] = useState<"checking" | "online" | "offline">("checking");
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export default function HomePage() {
       {/* Hero */}
       <div className="mb-8">
         <h2 className="font-[family-name:var(--font-instrument-serif)] text-3xl lg:text-4xl">
-          Namaste! <span className="opacity-80">{"\u{1F64F}"}</span>
+          Namaste{user?.name ? `, ${user.name}` : ""}! <span className="opacity-80">{"\u{1F64F}"}</span>
         </h2>
         <p className="mt-2 text-base text-muted">
           Book trains, buses & flights through conversation. No forms, no confusion \u2014 just tell me where you want to go.

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useTheme } from "@/components/providers/theme-provider";
+import { useUser } from "@/lib/hooks/use-user";
 
 const LANGUAGES = ["English", "Hindi", "Telugu", "Tamil", "Marathi", "Bengali", "Kannada"];
 
 export default function ProfilePage() {
+  const { user, logout } = useUser();
   const { theme, toggleTheme } = useTheme();
   const [selectedLang, setSelectedLang] = useState("English");
   const [fontSize, setFontSize] = useState<"normal" | "large" | "xlarge">("normal");
@@ -23,11 +25,11 @@ export default function ProfilePage() {
           <div className="rounded-2xl border border-border bg-card p-6">
             <div className="flex items-center gap-4">
               <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-secondary to-primary text-xl font-bold text-white">
-                L
+                {user?.name?.[0]?.toUpperCase() || "U"}
               </div>
               <div>
-                <h3 className="text-base font-semibold">Lakshmi Devi</h3>
-                <p className="text-sm text-muted">+91 98765 43210</p>
+                <h3 className="text-base font-semibold">{user?.name || "User"}</h3>
+                <p className="text-sm text-muted">{user?.phone || ""}</p>
               </div>
             </div>
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -179,6 +181,14 @@ export default function ProfilePage() {
               </a>
             </div>
           </div>
+
+          {/* Logout */}
+          <button
+            onClick={logout}
+            className="w-full rounded-2xl border border-error/30 bg-error-light p-4 text-sm font-semibold text-error transition-colors hover:bg-error hover:text-white"
+          >
+            Log Out
+          </button>
         </div>
       </div>
     </div>
