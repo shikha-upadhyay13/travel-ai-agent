@@ -1,17 +1,23 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageBubble, type ChatMessage } from "@/components/chat/message-bubble";
 import { TypingIndicator } from "@/components/chat/typing-indicator";
 import { ChatInput } from "@/components/chat/chat-input";
 import { PaymentSheet } from "@/components/chat/payment-sheet";
 
-const INITIAL_MESSAGES: ChatMessage[] = [
+const AGENT_API = process.env.NEXT_PUBLIC_AGENT_URL || "http://localhost:8000";
+
+function generateId() {
+  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+const WELCOME_MESSAGES: ChatMessage[] = [
   {
     id: "welcome",
     role: "assistant",
     content:
-      "\u{1F64F} Namaste! I'm YatraAI \u2014 your AI travel assistant.\n\nTell me where you want to go, and I'll find the best trains, buses, or flights for you. I can also help with hotels and dharamshalas near your destination.",
+      "\u{1F64F} Namaste! I'm YatraAI \u2014 your AI travel assistant.\n\nTell me where you want to go, and I'll find the best trains, buses, or flights for you.",
     type: "text",
   },
   {
@@ -30,271 +36,130 @@ const INITIAL_MESSAGES: ChatMessage[] = [
   },
 ];
 
-// Simulated conversation steps
-const DEMO_FLOW: { delay: number; messages: ChatMessage[]; typing?: string }[] = [
-  {
-    delay: 800,
-    typing: "Understanding your request...",
-    messages: [],
-  },
-  {
-    delay: 1500,
-    typing: "Searching trains from Hyderabad to Delhi...",
-    messages: [
-      {
-        id: "agent-ack",
-        role: "assistant",
-        content:
-          "Hyderabad \u2192 New Delhi, tomorrow (7 April). Let me search for the best trains for you...",
-        type: "text",
-      },
-    ],
-  },
-  {
-    delay: 2000,
-    messages: [
-      {
-        id: "train-results",
-        role: "assistant",
-        content: null,
-        type: "train_results",
-        metadata: {
-          results: [
-            {
-              name: "Telangana Express",
-              number: "12723",
-              departure: "06:00",
-              arrival: "22:30",
-              duration: "16h 30m",
-              price: 580,
-              class: "Sleeper",
-              seats: 42,
-            },
-            {
-              name: "AP Express",
-              number: "12723",
-              departure: "17:30",
-              arrival: "10:15",
-              duration: "16h 45m",
-              price: 620,
-              class: "Sleeper",
-              seats: 28,
-              recommended: true,
-            },
-            {
-              name: "GT Express",
-              number: "12615",
-              departure: "19:00",
-              arrival: "12:00",
-              duration: "17h",
-              price: 600,
-              class: "Sleeper",
-              seats: 8,
-            },
-          ],
-        },
-      },
-    ],
-  },
-  {
-    delay: 500,
-    messages: [
-      {
-        id: "recommend",
-        role: "assistant",
-        content:
-          "\u2B50 AP Express is the best option \u2014 overnight journey, arrives early morning. 28 sleeper seats available. Want to book this one?",
-        type: "text",
-      },
-      {
-        id: "select-chips",
-        role: "assistant",
-        content: null,
-        type: "chips",
-        metadata: {
-          chips: [
-            "\u2705 Book AP Express",
-            "Show other options",
-            "\u270F\uFE0F Change date",
-            "\u274C Cancel",
-          ],
-        },
-      },
-    ],
-  },
-  // After user selects:
-  {
-    delay: 1000,
-    typing: "Preparing your booking...",
-    messages: [],
-  },
-  {
-    delay: 1500,
-    messages: [
-      {
-        id: "confirm-msg",
-        role: "assistant",
-        content:
-          "Here's your booking summary. Please confirm to proceed with payment:",
-        type: "text",
-      },
-      {
-        id: "booking-status",
-        role: "assistant",
-        content: null,
-        type: "booking_status",
-        metadata: {
-          booking: {
-            status: "confirmed",
-            pnr: "4521678901",
-            trainName: "AP Express",
-            trainNumber: "12723",
-            date: "7 April 2026",
-            departure: "17:30",
-            arrival: "10:15",
-            class: "Sleeper",
-            passenger: "Lakshmi Devi, 65, F",
-            berth: "S4-32 (Lower)",
-            price: 620,
-          },
-        },
-      },
-    ],
-  },
-  {
-    delay: 500,
-    messages: [
-      {
-        id: "post-booking",
-        role: "assistant",
-        content:
-          "\u2705 Booking confirmed! E-ticket has been generated.\n\nSince you're heading to Delhi, here are some stay options near the station:",
-        type: "text",
-      },
-      {
-        id: "stay-results",
-        role: "assistant",
-        content: null,
-        type: "stay_suggestions",
-        metadata: {
-          stays: [
-            {
-              name: "Gurudwara Bangla Sahib \u{1F64F}",
-              type: "Dharamshala",
-              price: "Free",
-              distance: "2.1 km from station",
-              rating: 4,
-            },
-            {
-              name: "Railway Retiring Room",
-              type: "Retiring Room",
-              price: "\u20B9350/night",
-              distance: "Platform 1",
-              rating: 3,
-            },
-            {
-              name: "OYO Connaught Place",
-              type: "Hotel",
-              price: "\u20B9899/night",
-              distance: "3.5 km · AC",
-              rating: 4,
-            },
-          ],
-        },
-      },
-    ],
-  },
-  {
-    delay: 300,
-    messages: [
-      {
-        id: "final-chips",
-        role: "assistant",
-        content: null,
-        type: "chips",
-        metadata: {
-          chips: [
-            "\u{1F3E8} Book a stay",
-            "\u{1F4CB} View my trips",
-            "\u{1F4AC} New booking",
-          ],
-        },
-      },
-    ],
-  },
-];
-
 export default function ChatPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
-  const [typing, setTyping] = useState<string | null>(null);
-  const [demoStep, setDemoStep] = useState(0);
+  const [messages, setMessages] = useState<ChatMessage[]>(WELCOME_MESSAGES);
+  const [isLoading, setIsLoading] = useState(false);
+  const [typingLabel, setTypingLabel] = useState<string | null>(null);
   const [paymentOpen, setPaymentOpen] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState(0);
+  const [paymentDesc, setPaymentDesc] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const userIdRef = useRef(
+    typeof window !== "undefined"
+      ? localStorage.getItem("yatraai_user_id") || `user-${Date.now()}`
+      : "anonymous",
+  );
 
+  // Persist userId
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("yatraai_user_id", userIdRef.current);
+    }
+  }, []);
+
+  // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, typing]);
+  }, [messages, typingLabel]);
 
-  const advanceDemo = (step: number) => {
-    if (step >= DEMO_FLOW.length) return;
+  const sendToAgent = useCallback(async (text: string) => {
+    setIsLoading(true);
+    setTypingLabel("Thinking...");
 
-    const flow = DEMO_FLOW[step];
+    try {
+      const res = await fetch(`${AGENT_API}/agent/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: userIdRef.current,
+          message: text,
+        }),
+      });
 
-    if (flow.typing) {
-      setTyping(flow.typing);
-      setTimeout(() => {
-        setTyping(null);
-        if (flow.messages.length > 0) {
-          setMessages((prev) => [...prev, ...flow.messages]);
-        }
-        // Auto-advance if no messages (pure typing step)
-        if (flow.messages.length === 0) {
-          advanceDemo(step + 1);
-        } else {
-          setDemoStep(step + 1);
-        }
-      }, flow.delay);
-    } else {
-      setTimeout(() => {
-        setMessages((prev) => [...prev, ...flow.messages]);
-        setDemoStep(step + 1);
-        // If next step has no user interaction needed, auto-advance
-        if (step + 1 < DEMO_FLOW.length && DEMO_FLOW[step + 1]?.typing) {
-          advanceDemo(step + 1);
-        }
-      }, flow.delay);
+      if (!res.ok) throw new Error(`Agent returned ${res.status}`);
+
+      const data = await res.json();
+
+      // Update typing label based on agent state
+      if (data.agent_state === "SEARCHING") {
+        setTypingLabel("Searching...");
+      }
+
+      // Map agent messages to our ChatMessage format
+      const agentMessages: ChatMessage[] = data.messages.map(
+        (msg: { role: string; content: string | null; message_type: string; metadata?: Record<string, unknown> | null }) => ({
+          id: generateId(),
+          role: msg.role as "user" | "assistant",
+          content: msg.content,
+          type: msg.message_type,
+          metadata: msg.metadata,
+        }),
+      );
+
+      setMessages((prev) => [...prev, ...agentMessages]);
+    } catch (err) {
+      console.error("Agent error:", err);
+      // Fallback message when agent is unavailable
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: generateId(),
+          role: "assistant",
+          content:
+            "I couldn't connect to the AI agent right now. Please make sure the Python agent is running:\n\n`cd services/agent && python -m uvicorn app.main:app --port 8000`",
+          type: "text",
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
+      setTypingLabel(null);
     }
-  };
+  }, []);
 
-  const handleSend = (text: string) => {
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
-      role: "user",
-      content: text,
-      type: "text",
-    };
-    setMessages((prev) => [...prev, userMsg]);
+  const handleSend = useCallback(
+    (text: string) => {
+      // Add user message immediately
+      const userMsg: ChatMessage = {
+        id: generateId(),
+        role: "user",
+        content: text,
+        type: "text",
+      };
+      setMessages((prev) => [...prev, userMsg]);
 
-    // Trigger demo flow
-    if (demoStep === 0) {
-      advanceDemo(0);
-    } else if (demoStep === 4) {
-      // After train selection, show payment then booking
-      setPaymentOpen(true);
-    }
-  };
+      // Send to agent
+      sendToAgent(text);
+    },
+    [sendToAgent],
+  );
 
-  const handleChipClick = (chip: string) => {
-    handleSend(chip);
-  };
+  const handleChipClick = useCallback(
+    (chip: string) => {
+      handleSend(chip);
+    },
+    [handleSend],
+  );
 
-  const handlePay = () => {
+  const handleTrainSelect = useCallback(
+    (index: number, message: ChatMessage) => {
+      const results = message.metadata?.results as Array<{ name: string; price: number }> | undefined;
+      if (results && results[index]) {
+        const train = results[index];
+        setPaymentAmount(train.price);
+        setPaymentDesc(train.name);
+        handleSend(`Book ${train.name}`);
+      }
+    },
+    [handleSend],
+  );
+
+  const handlePay = useCallback(() => {
     setPaymentOpen(false);
-    // Continue demo with booking confirmation
-    advanceDemo(4);
-  };
+    // In Phase 6 this will trigger real payment — for now just confirm
+    handleSend("Payment confirmed");
+  }, [handleSend]);
 
   return (
     <div className="flex h-[calc(100dvh-3.5rem)] flex-col">
@@ -306,25 +171,20 @@ export default function ChatPage() {
               key={msg.id}
               message={msg}
               onChipClick={handleChipClick}
-              onTrainSelect={(i) => {
-                const train = msg.metadata?.results?.[i];
-                if (train) {
-                  handleSend(`\u2705 Book ${train.name}`);
-                }
-              }}
+              onTrainSelect={(i) => handleTrainSelect(i, msg)}
             />
           ))}
-          {typing && <TypingIndicator label={typing} />}
+          {typingLabel && <TypingIndicator label={typingLabel} />}
         </div>
       </div>
 
       {/* Input */}
-      <ChatInput onSend={handleSend} disabled={!!typing} />
+      <ChatInput onSend={handleSend} disabled={isLoading} />
 
-      {/* Payment */}
+      {/* Payment Sheet */}
       <PaymentSheet
-        amount={620}
-        description="AP Express · Sleeper · 7 Apr"
+        amount={paymentAmount}
+        description={paymentDesc}
         open={paymentOpen}
         onClose={() => setPaymentOpen(false)}
         onPay={handlePay}
