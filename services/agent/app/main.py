@@ -11,6 +11,8 @@ from app.api.health import router as health_router
 from app.api.bookings import router as bookings_router
 from app.api.stream import router as stream_router
 from app.api.actions import router as actions_router
+from app.api.agent import router as agent_router
+from app.api.agent_stream import router as agent_stream_router
 
 log = get_logger(__name__)
 
@@ -36,7 +38,7 @@ app = FastAPI(title="Travel AI Agent", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
+    allow_origins=CORS_ORIGINS + ["http://localhost:3000"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -46,6 +48,8 @@ app.include_router(health_router)
 app.include_router(bookings_router)
 app.include_router(stream_router)
 app.include_router(actions_router)
+app.include_router(agent_router)
+app.include_router(agent_stream_router)
 
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
 
