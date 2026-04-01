@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD — YatraAI: Inclusive Travel Booking Agent (Next.js)</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAFAF8;--card:#fff;--ink:#151515;--muted:#6B6B6B;--border:#E4E4DF;
+  --red:#DC2626;--red-bg:#FEF2F2;--green:#15803D;--green-bg:#F0FDF4;
+  --blue:#2563EB;--blue-bg:#EFF6FF;--purple:#7C3AED;--purple-bg:#F5F3FF;
+  --orange:#EA580C;--orange-bg:#FFF7ED;--amber:#B45309;--amber-bg:#FFFBEB;
+  --teal:#0D9488;--teal-bg:#F0FDFA;--accent:#E8563A;--accent-bg:#FFF0EC;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.72;-webkit-font-smoothing:antialiased}
+.page{max-width:940px;margin:0 auto;padding:0 36px 80px}
+
+/* Cover */
+.cover{padding:72px 36px 56px;max-width:940px;margin:0 auto;border-bottom:1px solid var(--border)}
+.cover .doc-badge{display:inline-block;background:var(--accent-bg);color:var(--accent);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:16px;margin-bottom:20px}
+.cover h1{font-family:'Instrument Serif',serif;font-size:clamp(32px,4.5vw,50px);line-height:1.15;font-weight:400;margin-bottom:14px}
+.cover h1 em{color:var(--accent);font-style:italic}
+.cover .meta{font-size:14px;color:var(--muted);line-height:1.9}
+.cover .meta strong{color:var(--ink)}
+
+/* TOC */
+.toc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin:40px 0}
+.toc h3{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:14px}
+.toc ol{padding-left:20px}
+.toc li{font-size:14px;margin-bottom:6px;color:var(--muted)}
+.toc li a{color:var(--ink);text-decoration:none;font-weight:500}
+.toc li a:hover{color:var(--accent)}
+
+/* Section */
+.sec{margin-top:52px}
+.sec-label{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px}
+h2{font-family:'Instrument Serif',serif;font-size:30px;font-weight:400;margin-bottom:10px;line-height:1.3}
+h3{font-family:'Instrument Serif',serif;font-size:21px;font-weight:400;margin:26px 0 8px}
+h4{font-size:15px;font-weight:700;margin:20px 0 6px}
+p{font-size:15px;margin-bottom:14px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+li{font-size:14.5px;margin-bottom:6px}
+strong{font-weight:600}
+.divider{height:1px;background:var(--border);margin:48px 0}
+
+/* Card */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0}
+.card h4{margin-top:0}
+
+/* Code / Diagram blocks */
+.diagram-block{background:#1a1a2e;color:#E0E0E0;border-radius:12px;padding:24px 28px;margin:20px 0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;white-space:pre}
+.diagram-block .comment{color:#6B7280}
+.diagram-block .highlight{color:#F59E0B}
+.diagram-block .green{color:#34D399}
+.diagram-block .blue{color:#60A5FA}
+.diagram-block .red{color:#F87171}
+.diagram-block .purple{color:#A78BFA}
+.diagram-block .cyan{color:#22D3EE}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px;background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+thead th{background:var(--ink);color:#fff;padding:11px 14px;text-align:left;font-weight:600;font-size:12.5px}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.p1{color:var(--red);font-weight:600}
+.p2{color:var(--orange);font-weight:600}
+.p3{color:var(--amber);font-weight:600}
+
+/* Grid layouts */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* Callout */
+.callout{border-left:4px solid var(--accent);background:var(--accent-bg);padding:16px 20px;border-radius:0 10px 10px 0;margin:20px 0}
+.callout p{margin-bottom:0;font-size:14px}
+
+/* Status badges */
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:8px;margin-right:4px}
+.badge-red{background:var(--red-bg);color:var(--red)}
+.badge-green{background:var(--green-bg);color:var(--green)}
+.badge-blue{background:var(--blue-bg);color:var(--blue)}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+.badge-orange{background:var(--orange-bg);color:var(--orange)}
+.badge-amber{background:var(--amber-bg);color:var(--amber)}
+
+/* Wireframe boxes */
+.wireframe{background:#F8F8F5;border:2px dashed var(--border);border-radius:14px;padding:0;margin:20px 0;overflow:hidden}
+.wf-header{background:var(--ink);color:#fff;padding:10px 16px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.wf-body{padding:20px}
+.wf-row{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.wf-box{border:1.5px solid #C0C0B8;border-radius:8px;padding:12px;flex:1;min-width:120px;font-size:12px;color:var(--muted);text-align:center;background:#fff}
+.wf-box.active{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:600}
+.wf-box.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.wf-chat{background:#fff;border:1.5px solid #C0C0B8;border-radius:12px;padding:14px;margin-bottom:10px}
+.wf-msg{margin-bottom:8px;font-size:12px;padding:8px 12px;border-radius:10px;max-width:75%;line-height:1.5}
+.wf-msg.bot{background:var(--blue-bg);color:var(--blue);border-bottom-left-radius:2px}
+.wf-msg.user{background:#F3F3EE;color:var(--ink);margin-left:auto;text-align:right;border-bottom-right-radius:2px}
+.wf-input{display:flex;gap:8px;margin-top:10px}
+.wf-input .field{flex:1;border:1.5px solid #C0C0B8;border-radius:8px;padding:8px 12px;font-size:11px;color:var(--muted)}
+.wf-input .btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:11px;font-weight:600}
+.wf-bottom-nav{display:flex;justify-content:space-around;padding:10px 0;border-top:1.5px solid #C0C0B8;margin-top:12px}
+.wf-nav-item{text-align:center;font-size:10px;color:var(--muted)}
+.wf-nav-item.active{color:var(--accent);font-weight:600}
+.wf-nav-icon{width:20px;height:20px;border-radius:50%;background:#E0E0DB;margin:0 auto 3px}
+.wf-nav-item.active .wf-nav-icon{background:var(--accent-bg)}
+</style>
+</head>
+<body>
+
+<!-- ======== COVER ======== -->
+<div class="cover">
+  <span class="doc-badge">Product Requirements Document</span>
+  <h1>YatraAI — <em>Complete PRD</em><br>Next.js Full-Stack Architecture</h1>
+  <div class="meta">
+    <strong>Product:</strong> YatraAI — Inclusive AI Travel Booking Agent<br>
+    <strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Date:</strong> April 2026<br>
+    <strong>Stack:</strong> Next.js 15 (App Router) + React 19 + TypeScript<br>
+    <strong>Audience:</strong> Engineering, Design, Product, Investors<br>
+    <strong>Status:</strong> <span class="badge badge-orange">Draft → Review</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ======== TOC ======== -->
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#s1">Executive Summary & Product Vision</a></li>
+    <li><a href="#s2">Problem Statement & User Personas</a></li>
+    <li><a href="#s3">System Architecture (Next.js)</a></li>
+    <li><a href="#s4">Complete Feature Specification</a></li>
+    <li><a href="#s5">Navigation Architecture & Sitemap</a></li>
+    <li><a href="#s6">Page-by-Page Wireframes</a></li>
+    <li><a href="#s7">API Routes & Data Models</a></li>
+    <li><a href="#s8">AI Agent Pipeline (Text + Voice)</a></li>
+    <li><a href="#s9">Database Schema</a></li>
+    <li><a href="#s10">Authentication & Payment Flow</a></li>
+    <li><a href="#s11">Non-Functional Requirements</a></li>
+    <li><a href="#s12">Release Phases & Priority Matrix</a></li>
+    <li><a href="#s13">Tech Stack Decision Matrix</a></li>
+    <li><a href="#s14">Success Metrics & KPIs</a></li>
+  </ol>
+</div>
+
+<!-- ======== S1 ======== -->
+<div class="sec" id="s1">
+  <span class="sec-label" style="background:var(--accent-bg);color:var(--accent)">Section 01</span>
+  <h2>Executive Summary & Product Vision</h2>
+  <p><strong>YatraAI</strong> is a conversational AI travel booking platform that enables anyone — regardless of language, literacy, or technical ability — to book bus, train, and flight tickets through natural text or voice conversations. Built on Next.js with a voice-first, multilingual approach, it also proactively suggests affordable accommodation (hotels, dharamshalas, homestays) near the destination.</p>
+
+  <h3>Vision Statement</h3>
+  <p><em>"A new way. A better way. That becomes their way."</em> — YatraAI exists to make travel booking as natural as talking to a friend. No forms. No dropdowns. No confusion. Just a conversation.</p>
+
+  <h3>Core Differentiators</h3>
+  <div class="grid-3">
+    <div class="card">
+      <h4>🗣️ Voice Call Booking</h4>
+      <p style="font-size:13px;color:var(--muted)">User calls a number → AI agent speaks in their language → books the ticket via conversation. No app or internet needed for initiation.</p>
+    </div>
+    <div class="card">
+      <h4>🌐 10+ Indian Languages</h4>
+      <p style="font-size:13px;color:var(--muted)">Hindi, Telugu, Tamil, Marathi, Bengali, Kannada, Gujarati, Malayalam, Punjabi, Odia + English + Hinglish/code-mixing support.</p>
+    </div>
+    <div class="card">
+      <h4>🏠 Dharamshala Layer</h4>
+      <p style="font-size:13px;color:var(--muted)">Budget stays near pilgrimage, medical, and government destinations — a uniquely Indian need no competitor addresses.</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S2 ======== -->
+<div class="sec" id="s2">
+  <span class="sec-label" style="background:var(--red-bg);color:var(--red)">Section 02</span>
+  <h2>Problem Statement & User Personas</h2>
+
+  <h3>Problem Statement</h3>
+  <p>Booking a bus, train, or flight ticket in India requires navigating complex, English-heavy, form-based interfaces (IRCTC, MakeMyTrip, redBus). For elderly users, rural populations, non-English speakers, and the digitally underserved, this process is exclusionary. They depend on relatives, local agents, or physically visiting counters — losing time, money, and access.</p>
+
+  <h3>User Personas</h3>
+
+  <div class="card">
+    <h4>Persona 1: Lakshmi Devi (Age 65, Warangal, Telangana)</h4>
+    <p style="font-size:13.5px"><strong>Language:</strong> Telugu only &nbsp;|&nbsp; <strong>Tech:</strong> Basic Android, uses WhatsApp for video calls &nbsp;|&nbsp; <strong>Travel:</strong> Visits Tirupati twice a year, grandchildren in Hyderabad</p>
+    <p style="font-size:13.5px"><strong>Pain:</strong> Cannot book IRCTC tickets herself. Waits for son to visit and book. Has missed medical appointments due to ticket unavailability. Does not understand English interface.</p>
+    <p style="font-size:13.5px"><strong>Need:</strong> Speak to someone in Telugu → get a train ticket booked → receive confirmation on WhatsApp → find a dharamshala near the temple.</p>
+  </div>
+
+  <div class="card">
+    <h4>Persona 2: Ramesh Kumar (Age 28, Patna, Bihar)</h4>
+    <p style="font-size:13.5px"><strong>Language:</strong> Hindi/Bhojpuri &nbsp;|&nbsp; <strong>Tech:</strong> Smartphone, uses Jio internet &nbsp;|&nbsp; <strong>Travel:</strong> Migrant worker, travels to Delhi/Mumbai for construction work</p>
+    <p style="font-size:13.5px"><strong>Pain:</strong> Booking agents charge ₹100-200 extra per ticket. IRCTC confuses him with OTP/Aadhaar steps. Gets waitlisted and doesn't know how to check PNR status.</p>
+    <p style="font-size:13.5px"><strong>Need:</strong> Type in Hindi on WhatsApp "Delhi ja raha hu 15 tarikh ko" → get options → pay via UPI → ticket done.</p>
+  </div>
+
+  <div class="card">
+    <h4>Persona 3: Priya Menon (Age 34, Kochi, Kerala)</h4>
+    <p style="font-size:13.5px"><strong>Language:</strong> Malayalam/English &nbsp;|&nbsp; <strong>Tech:</strong> Tech-savvy, iPhone user &nbsp;|&nbsp; <strong>Travel:</strong> Plans family trips, coordinates between 4 family members</p>
+    <p style="font-size:13.5px"><strong>Pain:</strong> Juggles between 3-4 apps to book flight + train + hotel. Comparison shopping is exhausting. No unified trip view.</p>
+    <p style="font-size:13.5px"><strong>Need:</strong> Single conversation to plan family trip → get all bookings (flight to Jaipur, hotel, local transport) in one thread.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S3 ======== -->
+<div class="sec" id="s3">
+  <span class="sec-label" style="background:var(--blue-bg);color:var(--blue)">Section 03</span>
+  <h2>System Architecture — Next.js Full-Stack</h2>
+
+  <h3>High-Level Architecture Diagram</h3>
+  <div class="diagram-block"><span class="comment">┌─────────────────────────────────────────────────────────────────────┐</span>
+<span class="comment">│                        CLIENT LAYER                                  │</span>
+<span class="comment">├─────────────────────────────────────────────────────────────────────┤</span>
+│                                                                     │
+│  <span class="blue">┌──────────────┐</span>  <span class="green">┌──────────────┐</span>  <span class="purple">┌────────────────┐</span>       │
+│  <span class="blue">│  Next.js App │</span>  <span class="green">│  WhatsApp    │</span>  <span class="purple">│  Voice (Phone) │</span>       │
+│  <span class="blue">│  (React 19)  │</span>  <span class="green">│  Business API│</span>  <span class="purple">│  Exotel/Twilio │</span>       │
+│  <span class="blue">│  PWA + App   │</span>  <span class="green">│  Channel     │</span>  <span class="purple">│  + Voice AI    │</span>       │
+│  <span class="blue">└──────┬───────┘</span>  <span class="green">└──────┬───────┘</span>  <span class="purple">└───────┬────────┘</span>       │
+│         │                 │                    │                     │
+<span class="comment">├─────────┼─────────────────┼────────────────────┼─────────────────────┤</span>
+<span class="comment">│                        API GATEWAY                                   │</span>
+<span class="comment">├─────────────────────────────────────────────────────────────────────┤</span>
+│         ▼                 ▼                    ▼                     │
+│  <span class="highlight">┌─────────────────────────────────────────────────────┐</span>           │
+│  <span class="highlight">│              NEXT.JS API ROUTES (App Router)         │</span>           │
+│  <span class="highlight">│  /api/chat   /api/voice   /api/book   /api/search   │</span>           │
+│  <span class="highlight">│  /api/pay    /api/stay    /api/user   /api/webhook   │</span>           │
+│  <span class="highlight">└────────────────────────┬────────────────────────────┘</span>           │
+│                          │                                          │
+<span class="comment">├──────────────────────────┼──────────────────────────────────────────┤</span>
+<span class="comment">│                     AI AGENT LAYER                                   │</span>
+<span class="comment">├──────────────────────────┼──────────────────────────────────────────┤</span>
+│                          ▼                                          │
+│  <span class="cyan">┌──────────────────────────────────────────────────┐</span>            │
+│  <span class="cyan">│              ORCHESTRATOR AGENT                    │</span>            │
+│  <span class="cyan">│  (LangGraph / Custom State Machine)               │</span>            │
+│  <span class="cyan">├────────┬────────┬─────────┬────────┬──────────────┤</span>            │
+│  <span class="cyan">│ Intent │ Search │ Booking │ Stay   │ Post-Booking │</span>            │
+│  <span class="cyan">│ Parser │ Agent  │ Agent   │ Agent  │ Agent        │</span>            │
+│  <span class="cyan">└───┬────┴───┬────┴────┬────┴───┬────┴──────┬───────┘</span>            │
+│      │        │         │        │           │                      │
+<span class="comment">├──────┼────────┼─────────┼────────┼───────────┼──────────────────────┤</span>
+<span class="comment">│                     EXTERNAL SERVICES                                │</span>
+<span class="comment">├──────────────────────────────────────────────────────────────────────┤</span>
+│      ▼        ▼         ▼        ▼           ▼                      │
+│  <span class="green">┌──────┐</span> <span class="blue">┌──────┐</span> <span class="red">┌───────┐</span> <span class="purple">┌───────┐</span> <span class="highlight">┌──────────┐</span>          │
+│  <span class="green">│Bhashi│</span> <span class="blue">│IRCTC │</span> <span class="red">│redBus │</span> <span class="purple">│Amadeus│</span> <span class="highlight">│OYO/Booking│</span>         │
+│  <span class="green">│ni API│</span> <span class="blue">│API   │</span> <span class="red">│API    │</span> <span class="purple">│/Kiwi  │</span> <span class="highlight">│.com API  │</span>          │
+│  <span class="green">│(NLP) │</span> <span class="blue">│(Rail)│</span> <span class="red">│(Bus)  │</span> <span class="purple">│(Air)  │</span> <span class="highlight">│(Hotels)  │</span>          │
+│  <span class="green">└──────┘</span> <span class="blue">└──────┘</span> <span class="red">└───────┘</span> <span class="purple">└───────┘</span> <span class="highlight">└──────────┘</span>          │
+│                                                                     │
+<span class="comment">├─────────────────────────────────────────────────────────────────────┤</span>
+<span class="comment">│                     DATA LAYER                                       │</span>
+<span class="comment">├─────────────────────────────────────────────────────────────────────┤</span>
+│  <span class="highlight">┌──────────┐</span>  <span class="green">┌──────────┐</span>  <span class="blue">┌───────────┐</span>  <span class="purple">┌────────────┐</span>   │
+│  <span class="highlight">│PostgreSQL│</span>  <span class="green">│  Redis   │</span>  <span class="blue">│ Pinecone/ │</span>  <span class="purple">│ S3/Cloudfl │</span>   │
+│  <span class="highlight">│(Neon/    │</span>  <span class="green">│  (Cache +│</span>  <span class="blue">│ Weaviate  │</span>  <span class="purple">│ are R2     │</span>   │
+│  <span class="highlight">│Supabase) │</span>  <span class="green">│  Session)│</span>  <span class="blue">│ (Vectors) │</span>  <span class="purple">│ (Assets)   │</span>   │
+│  <span class="highlight">└──────────┘</span>  <span class="green">└──────────┘</span>  <span class="blue">└───────────┘</span>  <span class="purple">└────────────┘</span>   │
+<span class="comment">└─────────────────────────────────────────────────────────────────────┘</span></div>
+
+  <h3>Next.js App Router — Folder Structure</h3>
+  <div class="diagram-block"><span class="comment">yatraai/</span>
+├── <span class="blue">app/</span>
+│   ├── <span class="blue">(auth)/</span>
+│   │   ├── login/page.tsx              <span class="comment"># Phone OTP login</span>
+│   │   └── onboard/page.tsx            <span class="comment"># Language + preferences setup</span>
+│   ├── <span class="blue">(main)/</span>
+│   │   ├── layout.tsx                  <span class="comment"># Shared shell: bottom nav + header</span>
+│   │   ├── page.tsx                    <span class="comment"># Home — chat entry point</span>
+│   │   ├── <span class="green">chat/</span>
+│   │   │   ├── page.tsx                <span class="comment"># Main conversational UI</span>
+│   │   │   └── [sessionId]/page.tsx    <span class="comment"># Specific chat session</span>
+│   │   ├── <span class="green">bookings/</span>
+│   │   │   ├── page.tsx                <span class="comment"># All bookings list</span>
+│   │   │   └── [bookingId]/page.tsx    <span class="comment"># Single booking detail + PNR</span>
+│   │   ├── <span class="green">stays/</span>
+│   │   │   ├── page.tsx                <span class="comment"># Accommodation browser</span>
+│   │   │   └── [stayId]/page.tsx       <span class="comment"># Hotel/dharamshala detail</span>
+│   │   ├── <span class="green">explore/</span>
+│   │   │   └── page.tsx                <span class="comment"># Destination discovery</span>
+│   │   └── <span class="green">profile/</span>
+│   │       ├── page.tsx                <span class="comment"># User profile + saved travelers</span>
+│   │       └── settings/page.tsx       <span class="comment"># Language, notifications, payment</span>
+│   ├── <span class="purple">api/</span>
+│   │   ├── chat/route.ts               <span class="comment"># Streaming AI chat endpoint</span>
+│   │   ├── voice/
+│   │   │   ├── inbound/route.ts        <span class="comment"># Handles incoming voice calls</span>
+│   │   │   └── webhook/route.ts        <span class="comment"># Voice provider callbacks</span>
+│   │   ├── book/
+│   │   │   ├── train/route.ts          <span class="comment"># IRCTC booking proxy</span>
+│   │   │   ├── bus/route.ts            <span class="comment"># Bus booking proxy</span>
+│   │   │   └── flight/route.ts         <span class="comment"># Flight booking proxy</span>
+│   │   ├── search/
+│   │   │   ├── trains/route.ts         <span class="comment"># Train availability search</span>
+│   │   │   ├── buses/route.ts          <span class="comment"># Bus search</span>
+│   │   │   └── flights/route.ts        <span class="comment"># Flight search</span>
+│   │   ├── stay/
+│   │   │   ├── search/route.ts         <span class="comment"># Accommodation search</span>
+│   │   │   └── book/route.ts           <span class="comment"># Accommodation booking</span>
+│   │   ├── pay/
+│   │   │   ├── initiate/route.ts       <span class="comment"># Payment initiation (UPI/Card)</span>
+│   │   │   └── webhook/route.ts        <span class="comment"># Razorpay webhook</span>
+│   │   ├── translate/route.ts          <span class="comment"># Bhashini translation API</span>
+│   │   ├── whatsapp/webhook/route.ts   <span class="comment"># WhatsApp Business webhook</span>
+│   │   └── user/route.ts               <span class="comment"># User CRUD</span>
+│   └── globals.css
+├── <span class="highlight">components/</span>
+│   ├── chat/
+│   │   ├── ChatWindow.tsx              <span class="comment"># Main chat container</span>
+│   │   ├── MessageBubble.tsx           <span class="comment"># Bot/user message bubble</span>
+│   │   ├── TicketCard.tsx              <span class="comment"># Inline ticket result card</span>
+│   │   ├── StayCard.tsx                <span class="comment"># Inline hotel/dharamshala card</span>
+│   │   ├── QuickReplyChips.tsx         <span class="comment"># Suggestion chips below messages</span>
+│   │   ├── VoiceButton.tsx             <span class="comment"># Push-to-talk voice input</span>
+│   │   └── LanguageSwitcher.tsx        <span class="comment"># In-chat language toggle</span>
+│   ├── booking/
+│   │   ├── BookingCard.tsx
+│   │   ├── PNRStatus.tsx
+│   │   └── PaymentSheet.tsx
+│   ├── ui/                             <span class="comment"># Shared design system</span>
+│   │   ├── Button.tsx
+│   │   ├── BottomNav.tsx
+│   │   ├── Modal.tsx
+│   │   └── LoadingSpinner.tsx
+│   └── layout/
+│       ├── AppShell.tsx
+│       └── Header.tsx
+├── <span class="cyan">lib/</span>
+│   ├── agents/
+│   │   ├── orchestrator.ts             <span class="comment"># Master agent router</span>
+│   │   ├── intentParser.ts             <span class="comment"># NLU intent classification</span>
+│   │   ├── searchAgent.ts              <span class="comment"># Multi-modal transport search</span>
+│   │   ├── bookingAgent.ts             <span class="comment"># Booking execution</span>
+│   │   ├── stayAgent.ts                <span class="comment"># Accommodation recommendation</span>
+│   │   └── postBookingAgent.ts         <span class="comment"># PNR tracking, cancellation</span>
+│   ├── providers/
+│   │   ├── irctc.ts                    <span class="comment"># IRCTC API client</span>
+│   │   ├── redbus.ts                   <span class="comment"># redBus API client</span>
+│   │   ├── amadeus.ts                  <span class="comment"># Amadeus flight API client</span>
+│   │   ├── bhashini.ts                 <span class="comment"># Bhashini NLP/TTS/ASR</span>
+│   │   └── razorpay.ts                 <span class="comment"># Payment provider</span>
+│   ├── voice/
+│   │   ├── voiceAgent.ts               <span class="comment"># Voice call handler</span>
+│   │   ├── speechToText.ts             <span class="comment"># ASR wrapper</span>
+│   │   └── textToSpeech.ts             <span class="comment"># TTS wrapper</span>
+│   ├── db/
+│   │   ├── schema.ts                   <span class="comment"># Drizzle ORM schema</span>
+│   │   └── client.ts                   <span class="comment"># DB connection</span>
+│   └── utils/
+│       ├── languageDetect.ts
+│       └── dateParser.ts               <span class="comment"># "15 tarikh" → 2026-04-15</span>
+├── <span class="red">prisma/</span> (or drizzle/)
+│   └── schema.prisma
+├── next.config.ts
+├── tailwind.config.ts
+└── package.json</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S4 ======== -->
+<div class="sec" id="s4">
+  <span class="sec-label" style="background:var(--green-bg);color:var(--green)">Section 04</span>
+  <h2>Complete Feature Specification</h2>
+
+  <table>
+    <thead><tr><th>ID</th><th>Feature</th><th>Description</th><th>Priority</th><th>Phase</th></tr></thead>
+    <tbody>
+      <tr><td>F-01</td><td>Text Chat (Multilingual)</td><td>Conversational booking via typed messages in 10+ Indian languages. NLU extracts intent, entities (origin, dest, date, class)</td><td class="p1">P0</td><td>1</td></tr>
+      <tr><td>F-02</td><td>Train Search & Book</td><td>Search IRCTC trains by route + date. Show availability, class, quota. Execute booking with passenger details + payment</td><td class="p1">P0</td><td>1</td></tr>
+      <tr><td>F-03</td><td>WhatsApp Channel</td><td>Full booking flow via WhatsApp Business API. No app install needed. Ticket delivered as WhatsApp message</td><td class="p1">P0</td><td>1</td></tr>
+      <tr><td>F-04</td><td>UPI Payment</td><td>Razorpay UPI deeplink generation. User clicks → pays on phone → auto-confirms booking</td><td class="p1">P0</td><td>1</td></tr>
+      <tr><td>F-05</td><td>Accommodation Suggestions</td><td>Post-booking: suggest nearby hotels, dharamshalas, homestays filtered by budget. Show distance, price, rating</td><td class="p1">P0</td><td>1</td></tr>
+      <tr><td>F-06</td><td>Voice Call Agent</td><td>Dial-in number. AI answers in user's language. Full booking via voice conversation. SMS confirmation</td><td class="p1">P0</td><td>2</td></tr>
+      <tr><td>F-07</td><td>Bus Search & Book</td><td>Search buses via redBus/Travelyaari API. Show operators, seat layout, prices. Execute booking</td><td class="p2">P1</td><td>2</td></tr>
+      <tr><td>F-08</td><td>PNR Status Tracking</td><td>Real-time PNR status checks. Proactive alerts for confirmation, waitlist movement, chart preparation</td><td class="p2">P1</td><td>2</td></tr>
+      <tr><td>F-09</td><td>In-App Voice Input</td><td>Push-to-talk button in chat. Speech-to-text in regional language. User can speak instead of typing</td><td class="p2">P1</td><td>2</td></tr>
+      <tr><td>F-10</td><td>Flight Search & Book</td><td>Search domestic flights via Amadeus/Kiwi. Compare airlines, prices, timings. Execute booking</td><td class="p2">P1</td><td>3</td></tr>
+      <tr><td>F-11</td><td>Trip Planner</td><td>Multi-leg journey planning. "Bus to X, then train to Y, hotel near Z" — all in one conversation</td><td class="p3">P2</td><td>3</td></tr>
+      <tr><td>F-12</td><td>Group/Family Booking</td><td>Book for multiple passengers in one transaction. Senior citizen quota, child discount auto-applied</td><td class="p3">P2</td><td>3</td></tr>
+      <tr><td>F-13</td><td>Cancellation & Refund</td><td>Cancel bookings via chat. Auto-initiate refund. Show refund status and timeline</td><td class="p2">P1</td><td>2</td></tr>
+      <tr><td>F-14</td><td>Saved Travelers</td><td>Store passenger details (name, age, Aadhaar, preferences) for quick rebooking</td><td class="p3">P2</td><td>2</td></tr>
+      <tr><td>F-15</td><td>Referral System</td><td>"Share with neighbor, earn ₹50 credit" — WhatsApp-native referral flow</td><td class="p3">P2</td><td>3</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S5 ======== -->
+<div class="sec" id="s5">
+  <span class="sec-label" style="background:var(--purple-bg);color:var(--purple)">Section 05</span>
+  <h2>Navigation Architecture & Sitemap</h2>
+
+  <h3>Complete Navigation Map</h3>
+  <div class="diagram-block"><span class="comment">═══════════════════════════════════════════════════════════════════════</span>
+<span class="highlight">                        YATRAAI — NAVIGATION SITEMAP</span>
+<span class="comment">═══════════════════════════════════════════════════════════════════════</span>
+
+<span class="blue">ENTRY POINTS</span>
+├── <span class="green">App Launch</span> ──→ Splash → Language Select → Phone OTP Login → Home
+├── <span class="green">WhatsApp</span> ──→ User sends "Hi" → Bot greets in detected language → Chat
+├── <span class="green">Phone Call</span> ──→ User dials number → IVR language select → Voice Agent
+└── <span class="green">Deep Link</span> ──→ /chat?intent=train&from=HYD&to=TRP → Pre-filled chat
+
+<span class="blue">BOTTOM NAVIGATION BAR (5 tabs)</span>
+┌────────────┬────────────┬────────────┬────────────┬────────────┐
+│  🏠 Home   │  💬 Chat   │  🎫 Trips  │  🏨 Stays  │  👤 Me     │
+│  (/)       │  (/chat)   │ (/bookings)│  (/stays)  │ (/profile) │
+└──────┬─────┴──────┬─────┴──────┬─────┴──────┬─────┴──────┬─────┘
+       │            │            │            │            │
+       ▼            ▼            ▼            ▼            ▼
+
+<span class="blue">HOME (/)</span>
+├── Greeting in user's language
+├── Quick Actions Grid:
+│   ├── 🚆 Book Train
+│   ├── 🚌 Book Bus
+│   ├── ✈️ Book Flight
+│   └── 🏨 Find Stay
+├── Recent Bookings (horizontal scroll)
+├── Active PNR Status Cards
+└── "Start a conversation" → /chat
+
+<span class="blue">CHAT (/chat)</span>
+├── /chat                     <span class="comment"># New conversation</span>
+├── /chat/[sessionId]         <span class="comment"># Resume existing</span>
+├── Inline Components:
+│   ├── TicketResultCards     <span class="comment"># Shown after search</span>
+│   ├── SeatSelector          <span class="comment"># Bus seat layout</span>
+│   ├── PaymentSheet          <span class="comment"># Bottom sheet for UPI/Card</span>
+│   ├── StayRecommendation    <span class="comment"># Post-booking hotel cards</span>
+│   └── QuickReplyChips       <span class="comment"># "Yes" "No" "Show more"</span>
+└── Header Actions:
+    ├── Language Switcher 🌐
+    ├── Voice Input Toggle 🎙️
+    └── Call Agent Button 📞
+
+<span class="blue">TRIPS (/bookings)</span>
+├── /bookings                 <span class="comment"># Tabs: Upcoming | Past | Cancelled</span>
+└── /bookings/[bookingId]
+    ├── Ticket Details (PNR, train/bus/flight, seats, passengers)
+    ├── Live PNR Status
+    ├── E-Ticket Download (PDF)
+    ├── Share on WhatsApp
+    ├── Cancel Booking → Refund flow
+    └── Linked Stay Booking (if any)
+
+<span class="blue">STAYS (/stays)</span>
+├── /stays                    <span class="comment"># Search by destination + budget</span>
+│   ├── Filter: Hotels | Dharamshala | Homestay | Guest House
+│   ├── Sort: Price | Rating | Distance
+│   └── Map View Toggle
+└── /stays/[stayId]
+    ├── Photos, Description, Amenities
+    ├── Price per night
+    ├── Distance from station/bus stand
+    ├── Book via chat or direct
+    └── Share on WhatsApp
+
+<span class="blue">PROFILE (/profile)</span>
+├── /profile
+│   ├── Name, Phone, Language Preference
+│   ├── Saved Travelers (family members)
+│   │   └── Add/Edit: Name, Age, Gender, Aadhaar, Preferences
+│   ├── Payment Methods (UPI IDs, saved cards)
+│   ├── Referral Code + Share
+│   └── Booking History Summary
+└── /profile/settings
+    ├── Language (change primary language)
+    ├── Notifications (WhatsApp/SMS/Push)
+    ├── Accessibility (font size, high contrast)
+    └── Help & Support → Opens chat with "I need help"</div>
+
+  <h3>Navigation Flow Diagram — Booking Journey</h3>
+  <div class="diagram-block"><span class="highlight">USER BOOKING JOURNEY (Happy Path)</span>
+
+<span class="green">Start</span>
+  │
+  ├──<span class="blue"> Text Mode</span> ──────────────────────────────────────┐
+  │   User opens app/WhatsApp                       │
+  │   Types: "मुझे कल दिल्ली जाना है"                   │
+  │                                                  │
+  ├──<span class="purple"> Voice Mode</span> ─────────────────────────────────────┐
+  │   User dials +91-XXXX-XXXX                      │
+  │   Says: "Nenu repu Tirupati vellali"            │
+  │                                                  │
+  ▼                                                  │
+<span class="cyan">┌────────────────────────┐</span>                             │
+<span class="cyan">│ Language Detection      │</span> ◄────────────────────────────┘
+<span class="cyan">│ (Bhashini ASR/NLU)     │</span>
+<span class="cyan">└──────────┬─────────────┘</span>
+           │
+           ▼
+<span class="cyan">┌────────────────────────┐</span>
+<span class="cyan">│ Intent Extraction       │</span>
+<span class="cyan">│ intent: BOOK_TRAIN     │</span>
+<span class="cyan">│ from: current_city     │</span>
+<span class="cyan">│ to: Delhi              │</span>
+<span class="cyan">│ date: tomorrow         │</span>
+<span class="cyan">│ class: ?  quota: ?     │</span>
+<span class="cyan">└──────────┬─────────────┘</span>
+           │
+           ▼
+<span class="cyan">┌────────────────────────┐</span>     Missing info?
+<span class="cyan">│ Slot Filling            │</span> ──── Yes ──→ Ask: "Which class?
+<span class="cyan">│ (Check all required     │</span>              "How many passengers?"
+<span class="cyan">│  fields are present)    │</span> ◄──── User responds ────┘
+<span class="cyan">└──────────┬─────────────┘</span>
+           │ All slots filled
+           ▼
+<span class="cyan">┌────────────────────────┐</span>
+<span class="cyan">│ Search API Call         │</span>
+<span class="cyan">│ IRCTC / redBus /       │</span>
+<span class="cyan">│ Amadeus                │</span>
+<span class="cyan">└──────────┬─────────────┘</span>
+           │
+           ▼
+<span class="highlight">┌────────────────────────┐</span>
+<span class="highlight">│ Present Results         │</span>
+<span class="highlight">│ "3 trains found:       │</span>
+<span class="highlight">│  1. Rajdhani 6:00 AM   │</span>
+<span class="highlight">│  2. Shatabdi 7:30 AM   │</span>
+<span class="highlight">│  3. Express 9:00 PM"   │</span>
+<span class="highlight">└──────────┬─────────────┘</span>
+           │ User selects option
+           ▼
+<span class="cyan">┌────────────────────────┐</span>
+<span class="cyan">│ Passenger Details       │</span> ← Uses saved travelers if available
+<span class="cyan">│ Confirm: Name, Age,    │</span>
+<span class="cyan">│ Berth preference        │</span>
+<span class="cyan">└──────────┬─────────────┘</span>
+           │
+           ▼
+<span class="red">┌────────────────────────┐</span>
+<span class="red">│ Payment                 │</span>
+<span class="red">│ Text: Bottom sheet UPI  │</span>
+<span class="red">│ Voice: SMS UPI deeplink │</span>
+<span class="red">│ WhatsApp: Inline pay    │</span>
+<span class="red">└──────────┬─────────────┘</span>
+           │ Payment confirmed
+           ▼
+<span class="green">┌────────────────────────┐</span>
+<span class="green">│ ✅ BOOKING CONFIRMED    │</span>
+<span class="green">│ PNR: 4521678901        │</span>
+<span class="green">│ E-ticket sent via       │</span>
+<span class="green">│ WhatsApp + SMS          │</span>
+<span class="green">└──────────┬─────────────┘</span>
+           │
+           ▼
+<span class="purple">┌────────────────────────┐</span>
+<span class="purple">│ 🏨 Stay Suggestion      │</span>
+<span class="purple">│ "Delhi mein ruknaa hai? │</span>
+<span class="purple">│ Yeh rahe options:       │</span>
+<span class="purple">│ 1. OYO ₹899/night      │</span>
+<span class="purple">│ 2. Dharamshala ₹200     │</span>
+<span class="purple">│ 3. Gurudwara (Free)"    │</span>
+<span class="purple">└────────────────────────┘</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S6 ======== -->
+<div class="sec" id="s6">
+  <span class="sec-label" style="background:var(--orange-bg);color:var(--orange)">Section 06</span>
+  <h2>Page-by-Page Wireframes</h2>
+
+  <h3>Wireframe 1 — Home Screen</h3>
+  <div class="wireframe">
+    <div class="wf-header">📱 Home Screen — / (Mobile-First)</div>
+    <div class="wf-body">
+      <div class="wf-row">
+        <div class="wf-box" style="flex:3;text-align:left;font-size:11px">
+          <div style="font-size:16px;font-weight:700;margin-bottom:4px">नमस्ते, लक्ष्मी 🙏</div>
+          <div style="color:var(--muted)">आज कहाँ जाना है?</div>
+        </div>
+        <div class="wf-box" style="flex:1;font-size:18px">🌐 TE</div>
+      </div>
+      <div class="wf-row">
+        <div class="wf-box active">🚆<br>Train</div>
+        <div class="wf-box">🚌<br>Bus</div>
+        <div class="wf-box">✈️<br>Flight</div>
+        <div class="wf-box">🏨<br>Stay</div>
+      </div>
+      <div style="font-size:11px;font-weight:600;margin:12px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Your Upcoming Trips</div>
+      <div class="wf-row">
+        <div class="wf-box" style="text-align:left;font-size:11px;border-color:var(--green);background:var(--green-bg)">
+          <strong>🚆 HYD → TRP</strong><br>Apr 5 · Vande Bharat<br>PNR: CNF ✅
+        </div>
+        <div class="wf-box" style="text-align:left;font-size:11px">
+          <strong>🚌 TRP → CHN</strong><br>Apr 8 · APSRTC<br>Booked ✅
+        </div>
+      </div>
+      <div class="wf-box dark" style="font-size:14px;padding:16px;cursor:pointer">💬 Start a Conversation — "Tell me where you want to go"</div>
+      <div class="wf-bottom-nav">
+        <div class="wf-nav-item active"><div class="wf-nav-icon"></div>Home</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Chat</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Trips</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Stays</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Me</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Wireframe 2 — Chat Screen (Core Booking)</h3>
+  <div class="wireframe">
+    <div class="wf-header">💬 Chat Screen — /chat (The Heart of the Product)</div>
+    <div class="wf-body">
+      <div class="wf-row" style="justify-content:space-between;margin-bottom:4px">
+        <div style="font-size:12px;font-weight:600">← YatraAI</div>
+        <div style="font-size:11px;display:flex;gap:12px"><span>🌐 हिंदी</span> <span>🎙️</span> <span>📞</span></div>
+      </div>
+      <div class="wf-chat">
+        <div class="wf-msg bot">🙏 नमस्ते! मैं YatraAI हूँ। बताइए कहाँ जाना है?</div>
+        <div class="wf-msg user">मुझे कल दिल्ली जाना है हैदराबाद से</div>
+        <div class="wf-msg bot">
+          हैदराबाद → दिल्ली, कल (6 अप्रैल) के लिए trains देखता हूँ... 🔍
+        </div>
+        <div class="wf-msg bot" style="max-width:90%;padding:0;overflow:hidden;border-radius:12px;border:1.5px solid var(--border)">
+          <div style="padding:10px 14px;background:var(--blue-bg);font-size:11px;font-weight:600;color:var(--blue)">🚆 3 Trains Found</div>
+          <div style="padding:10px 14px;font-size:11px;border-bottom:1px solid var(--border)">
+            <strong>1. Telangana Exp (12723)</strong><br>
+            06:00 → 22:30 · SL ₹580 · 3AC ₹1,540<br>
+            <span style="color:var(--green);font-weight:600">Available: 42 seats</span>
+          </div>
+          <div style="padding:10px 14px;font-size:11px;border-bottom:1px solid var(--border)">
+            <strong>2. Rajdhani (12437)</strong><br>
+            18:15 → 06:45 · 3AC ₹2,100 · 2AC ₹3,050<br>
+            <span style="color:var(--green);font-weight:600">Available: 18 seats</span>
+          </div>
+          <div style="padding:10px 14px;font-size:11px">
+            <strong>3. Dakshin Exp (12721)</strong><br>
+            20:30 → 12:00 · SL ₹620 · 3AC ₹1,680<br>
+            <span style="color:var(--orange);font-weight:600">RAC: 5</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin:10px 0;flex-wrap:wrap">
+          <div style="font-size:11px;background:var(--accent-bg);color:var(--accent);padding:6px 14px;border-radius:16px;font-weight:600">1. Telangana Exp</div>
+          <div style="font-size:11px;background:#F3F3EE;padding:6px 14px;border-radius:16px">2. Rajdhani</div>
+          <div style="font-size:11px;background:#F3F3EE;padding:6px 14px;border-radius:16px">3. Dakshin Exp</div>
+        </div>
+        <div class="wf-msg user">पहला वाला बुक करो, sleeper class</div>
+        <div class="wf-msg bot">
+          ✅ Telangana Exp, SL, ₹580<br>
+          यात्री का नाम: लक्ष्मी देवी (65, F)<br>
+          Lower berth request किया है।<br><br>
+          💳 ₹580 pay करें?
+        </div>
+        <div style="background:var(--green-bg);border:1.5px solid #BBE3CE;border-radius:12px;padding:12px 16px;font-size:12px;margin-top:8px">
+          <div style="font-weight:700;color:var(--green);margin-bottom:4px">Pay ₹580 via UPI</div>
+          <div style="display:flex;gap:8px">
+            <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;flex:1;text-align:center">GPay</div>
+            <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;flex:1;text-align:center">PhonePe</div>
+            <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:11px;flex:1;text-align:center">Other UPI</div>
+          </div>
+        </div>
+      </div>
+      <div class="wf-input">
+        <div class="field">हिंदी में टाइप करें...</div>
+        <div class="btn">🎙️</div>
+        <div class="btn">Send</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Wireframe 3 — Booking Confirmed + Stay Suggestion</h3>
+  <div class="wireframe">
+    <div class="wf-header">✅ Post-Booking — Stay Recommendation Flow</div>
+    <div class="wf-body">
+      <div class="wf-chat">
+        <div class="wf-msg bot" style="background:var(--green-bg);color:var(--green);max-width:90%;border:1.5px solid #BBE3CE">
+          <strong>✅ Booking Confirmed!</strong><br>
+          PNR: 4521678901<br>
+          Telangana Exp · 6 Apr · SL · Berth: S4-32 (Lower)<br>
+          E-ticket WhatsApp पर भेज दिया है 📱
+        </div>
+        <div class="wf-msg bot">
+          दिल्ली में रुकना है? आपके बजट में ये options हैं:
+        </div>
+        <div class="wf-msg bot" style="max-width:90%;padding:0;overflow:hidden;border-radius:12px;border:1.5px solid var(--border)">
+          <div style="padding:10px 14px;background:var(--purple-bg);font-size:11px;font-weight:600;color:var(--purple)">🏨 Delhi Station के पास</div>
+          <div style="padding:10px 14px;font-size:11px;border-bottom:1px solid var(--border)">
+            <strong>1. Gurudwara Bangla Sahib</strong> 🙏<br>
+            Free stay · 2.1 km from station<br>
+            <span style="color:var(--green)">★★★★☆</span>
+          </div>
+          <div style="padding:10px 14px;font-size:11px;border-bottom:1px solid var(--border)">
+            <strong>2. Railway Retiring Room</strong><br>
+            ₹350/night · Platform 1<br>
+            <span style="color:var(--green)">★★★☆☆</span>
+          </div>
+          <div style="padding:10px 14px;font-size:11px">
+            <strong>3. OYO near Connaught Place</strong><br>
+            ₹899/night · AC · 3.5 km<br>
+            <span style="color:var(--green)">★★★★☆</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Wireframe 4 — Trips/Bookings Screen</h3>
+  <div class="wireframe">
+    <div class="wf-header">🎫 Trips Screen — /bookings</div>
+    <div class="wf-body">
+      <div style="font-size:14px;font-weight:700;margin-bottom:10px">Your Trips</div>
+      <div class="wf-row">
+        <div class="wf-box active">Upcoming (2)</div>
+        <div class="wf-box">Past (8)</div>
+        <div class="wf-box">Cancelled (1)</div>
+      </div>
+      <div style="background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px">
+          <span style="font-weight:700">🚆 HYD → NDLS</span>
+          <span class="badge badge-green">Confirmed</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Telangana Exp · 6 Apr · SL · Lower Berth</div>
+        <div style="font-size:11px;color:var(--muted)">PNR: 4521678901 · ₹580</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <div style="font-size:10px;background:var(--blue-bg);color:var(--blue);padding:4px 10px;border-radius:12px;font-weight:600">View Ticket</div>
+          <div style="font-size:10px;background:#F3F3EE;padding:4px 10px;border-radius:12px">Share</div>
+          <div style="font-size:10px;background:var(--red-bg);color:var(--red);padding:4px 10px;border-radius:12px">Cancel</div>
+        </div>
+      </div>
+      <div class="wf-bottom-nav">
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Home</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Chat</div>
+        <div class="wf-nav-item active"><div class="wf-nav-icon"></div>Trips</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Stays</div>
+        <div class="wf-nav-item"><div class="wf-nav-icon"></div>Me</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Wireframe 5 — Voice Call Flow</h3>
+  <div class="wireframe">
+    <div class="wf-header">📞 Voice Call Agent — IVR + AI Flow</div>
+    <div class="wf-body">
+      <div style="text-align:center;padding:20px">
+        <div style="width:80px;height:80px;border-radius:50%;background:var(--green-bg);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:32px">📞</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px">Voice Agent Active</div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Speaking in: తెలుగు (Telugu)</div>
+        <div style="text-align:left;max-width:320px;margin:0 auto">
+          <div style="font-size:12px;padding:8px 0;border-bottom:1px dashed var(--border)">🤖 "నమస్తే! YatraAI కి స్వాగతం. మీరు ఎక్కడికి వెళ్ళాలనుకుంటున్నారు?"</div>
+          <div style="font-size:12px;padding:8px 0;border-bottom:1px dashed var(--border);color:var(--blue)">👤 "నేను రేపు తిరుపతి వెళ్ళాలి హైదరాబాద్ నుండి"</div>
+          <div style="font-size:12px;padding:8px 0;border-bottom:1px dashed var(--border)">🤖 "రేపు హైదరాబాద్ నుండి తిరుపతి కి 3 trains ఉన్నాయి..."</div>
+          <div style="font-size:12px;padding:8px 0;border-bottom:1px dashed var(--border);color:var(--blue)">👤 "మొదటిది book చేయండి"</div>
+          <div style="font-size:12px;padding:8px 0">🤖 "₹420 UPI link మీ phone కి SMS చేస్తున్నాను..."</div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;justify-content:center">
+          <div style="width:50px;height:50px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px">✕</div>
+          <div style="width:50px;height:50px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px">🔇</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S7 ======== -->
+<div class="sec" id="s7">
+  <span class="sec-label" style="background:var(--teal-bg);color:var(--teal)">Section 07</span>
+  <h2>API Routes & Data Models</h2>
+
+  <h3>API Route Map</h3>
+  <div class="diagram-block"><span class="highlight">NEXT.JS API ROUTES (/app/api/)</span>
+
+<span class="blue">CHAT & AI</span>
+POST   /api/chat                 <span class="comment">→ Streaming chat (SSE). Body: {message, sessionId, lang}</span>
+POST   /api/chat/feedback        <span class="comment">→ Thumbs up/down on AI response</span>
+GET    /api/chat/history/[sid]   <span class="comment">→ Fetch conversation history</span>
+
+<span class="blue">VOICE</span>
+POST   /api/voice/inbound        <span class="comment">→ Exotel webhook: new incoming call</span>
+POST   /api/voice/webhook        <span class="comment">→ Voice agent status updates</span>
+POST   /api/voice/tts            <span class="comment">→ Text-to-Speech synthesis</span>
+POST   /api/voice/stt            <span class="comment">→ Speech-to-Text transcription</span>
+
+<span class="blue">SEARCH</span>
+POST   /api/search/trains        <span class="comment">→ {from, to, date, class?, quota?}</span>
+POST   /api/search/buses         <span class="comment">→ {from, to, date, operator?}</span>
+POST   /api/search/flights       <span class="comment">→ {from, to, date, passengers, class?}</span>
+
+<span class="blue">BOOKING</span>
+POST   /api/book/train           <span class="comment">→ {trainId, class, passengers[], payment}</span>
+POST   /api/book/bus             <span class="comment">→ {busId, seats[], passengers[], payment}</span>
+POST   /api/book/flight          <span class="comment">→ {flightId, passengers[], payment}</span>
+GET    /api/book/[bookingId]     <span class="comment">→ Booking details + PNR status</span>
+POST   /api/book/cancel          <span class="comment">→ {bookingId, reason}</span>
+
+<span class="blue">ACCOMMODATION</span>
+POST   /api/stay/search          <span class="comment">→ {destination, checkIn, checkOut, budget, type}</span>
+POST   /api/stay/book            <span class="comment">→ {stayId, checkIn, checkOut, guests}</span>
+GET    /api/stay/[stayId]        <span class="comment">→ Stay details</span>
+
+<span class="blue">PAYMENT</span>
+POST   /api/pay/initiate         <span class="comment">→ {amount, bookingId, method: "upi"|"card"}</span>
+POST   /api/pay/webhook          <span class="comment">→ Razorpay payment confirmation</span>
+GET    /api/pay/status/[payId]   <span class="comment">→ Payment status check</span>
+
+<span class="blue">USER</span>
+POST   /api/user/otp/send        <span class="comment">→ {phone} → sends OTP</span>
+POST   /api/user/otp/verify      <span class="comment">→ {phone, otp} → returns JWT</span>
+GET    /api/user/profile         <span class="comment">→ User profile</span>
+PUT    /api/user/profile         <span class="comment">→ Update profile</span>
+POST   /api/user/travelers       <span class="comment">→ Add saved traveler</span>
+GET    /api/user/travelers       <span class="comment">→ List saved travelers</span>
+
+<span class="blue">WHATSAPP</span>
+POST   /api/whatsapp/webhook     <span class="comment">→ WhatsApp Business API webhook</span>
+POST   /api/whatsapp/send        <span class="comment">→ Send template/session message</span>
+
+<span class="blue">TRANSLATION</span>
+POST   /api/translate            <span class="comment">→ {text, fromLang, toLang} via Bhashini</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S8 ======== -->
+<div class="sec" id="s8">
+  <span class="sec-label" style="background:var(--amber-bg);color:var(--amber)">Section 08</span>
+  <h2>AI Agent Pipeline — Text + Voice</h2>
+
+  <h3>Multi-Agent Orchestration</h3>
+  <div class="diagram-block"><span class="highlight">AGENT ORCHESTRATION PIPELINE</span>
+
+<span class="comment">User Message (any language)</span>
+         │
+         ▼
+<span class="cyan">┌─────────────────────┐</span>
+<span class="cyan">│  LANGUAGE DETECTOR   │</span>  Bhashini NLU / langdetect
+<span class="cyan">│  "mujhe kal delhi"  │</span>  → lang: "hi" (Hindi)
+<span class="cyan">└─────────┬───────────┘</span>
+          │
+          ▼
+<span class="cyan">┌─────────────────────┐</span>
+<span class="cyan">│  TRANSLATOR          │</span>  If not English → translate to English
+<span class="cyan">│  (for LLM processing)│</span>  for intent extraction
+<span class="cyan">└─────────┬───────────┘</span>  (Response translated back to user's lang)
+          │
+          ▼
+<span class="highlight">┌─────────────────────┐</span>
+<span class="highlight">│  ORCHESTRATOR AGENT  │</span>  LangGraph State Machine
+<span class="highlight">│  (Master Router)     │</span>  Determines which agent handles the message
+<span class="highlight">└─────────┬───────────┘</span>
+          │
+          ├──→ <span class="blue">INTENT PARSER AGENT</span>
+          │    Extract: action, origin, destination, date, class,
+          │    passengers, budget, preferences
+          │    Output: structured JSON intent object
+          │
+          ├──→ <span class="green">SEARCH AGENT</span>
+          │    Calls appropriate API (IRCTC/redBus/Amadeus)
+          │    Formats results into conversational cards
+          │    Handles "show more", "cheaper options", "earlier time"
+          │
+          ├──→ <span class="red">BOOKING AGENT</span>
+          │    Confirms passenger details
+          │    Initiates payment
+          │    Handles IRCTC booking flow (Aadhaar, OTP if needed)
+          │    Generates e-ticket
+          │
+          ├──→ <span class="purple">STAY AGENT</span>
+          │    Triggered post-booking (or on explicit request)
+          │    Searches nearby accommodation
+          │    Filters by: budget, type (hotel/dharamshala/homestay),
+          │    distance from station, rating
+          │
+          └──→ <span class="highlight">POST-BOOKING AGENT</span>
+               PNR status check
+               Cancellation flow
+               Refund tracking
+               Delay alerts & rebooking suggestions
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="highlight">VOICE CALL PIPELINE (additional layer)</span>
+
+<span class="green">Phone Call Incoming</span>
+         │
+         ▼
+<span class="cyan">┌─────────────────────┐</span>
+<span class="cyan">│  TELEPHONY LAYER     │</span>  Exotel / Twilio
+<span class="cyan">│  (Call Routing)      │</span>  Accept call, route to voice agent
+<span class="cyan">└─────────┬───────────┘</span>
+          │
+          ▼
+<span class="cyan">┌─────────────────────┐</span>
+<span class="cyan">│  ASR (Speech→Text)   │</span>  Bhashini ASR / Google STT
+<span class="cyan">│  Real-time streaming │</span>  Handles accents, code-mixing
+<span class="cyan">└─────────┬───────────┘</span>
+          │ Transcribed text
+          ▼
+<span class="highlight">┌─────────────────────┐</span>
+<span class="highlight">│  SAME ORCHESTRATOR   │</span>  ← Same pipeline as text chat
+<span class="highlight">│  AGENT PIPELINE      │</span>  Returns structured response
+<span class="highlight">└─────────┬───────────┘</span>
+          │ Response text
+          ▼
+<span class="cyan">┌─────────────────────┐</span>
+<span class="cyan">│  TTS (Text→Speech)   │</span>  ElevenLabs / Bhashini TTS
+<span class="cyan">│  Natural voice output │</span>  Same language as user
+<span class="cyan">└─────────┬───────────┘</span>
+          │ Audio stream
+          ▼
+<span class="green">Phone Speaker Output</span>
+
+<span class="comment">Payment for voice: SMS with UPI deeplink sent during call</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S9 ======== -->
+<div class="sec" id="s9">
+  <span class="sec-label" style="background:var(--blue-bg);color:var(--blue)">Section 09</span>
+  <h2>Database Schema</h2>
+
+  <div class="diagram-block"><span class="highlight">DATABASE SCHEMA (PostgreSQL via Drizzle ORM)</span>
+
+<span class="blue">users</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ Column           │ Type      │ Notes                        │
+├──────────────────┼───────────┼──────────────────────────────┤
+│ id               │ UUID PK   │ gen_random_uuid()            │
+│ phone            │ VARCHAR   │ UNIQUE, +91XXXXXXXXXX        │
+│ name             │ VARCHAR   │ Nullable (set after first    │
+│                  │           │ booking)                     │
+│ preferred_lang   │ VARCHAR   │ "hi","te","ta","mr","en"...  │
+│ created_at       │ TIMESTAMP │                              │
+│ updated_at       │ TIMESTAMP │                              │
+└──────────────────┴───────────┴──────────────────────────────┘
+
+<span class="blue">saved_travelers</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ id               │ UUID PK   │                              │
+│ user_id          │ UUID FK   │ → users.id                   │
+│ name             │ VARCHAR   │                              │
+│ age              │ INT       │                              │
+│ gender           │ ENUM      │ M / F / O                    │
+│ id_type          │ ENUM      │ aadhaar / passport           │
+│ id_number        │ VARCHAR   │ Encrypted                    │
+│ berth_pref       │ ENUM      │ lower / middle / upper / any │
+│ is_senior        │ BOOLEAN   │ Computed from age            │
+└──────────────────┴───────────┴──────────────────────────────┘
+
+<span class="blue">chat_sessions</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ id               │ UUID PK   │                              │
+│ user_id          │ UUID FK   │ → users.id                   │
+│ channel          │ ENUM      │ app / whatsapp / voice       │
+│ language         │ VARCHAR   │                              │
+│ status           │ ENUM      │ active / completed / expired │
+│ created_at       │ TIMESTAMP │                              │
+│ last_message_at  │ TIMESTAMP │                              │
+└──────────────────┴───────────┴──────────────────────────────┘
+
+<span class="blue">messages</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ id               │ UUID PK   │                              │
+│ session_id       │ UUID FK   │ → chat_sessions.id           │
+│ role             │ ENUM      │ user / assistant / system     │
+│ content          │ TEXT      │ Original language text        │
+│ content_en       │ TEXT      │ English translation           │
+│ intent           │ JSONB     │ Parsed intent object         │
+│ metadata         │ JSONB     │ Cards shown, actions taken   │
+│ created_at       │ TIMESTAMP │                              │
+└──────────────────┴───────────┴──────────────────────────────┘
+
+<span class="blue">bookings</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ id               │ UUID PK   │                              │
+│ user_id          │ UUID FK   │ → users.id                   │
+│ session_id       │ UUID FK   │ → chat_sessions.id           │
+│ type             │ ENUM      │ train / bus / flight          │
+│ status           │ ENUM      │ pending / confirmed / cnf /  │
+│                  │           │ rac / wl / cancelled         │
+│ pnr              │ VARCHAR   │                              │
+│ provider_ref     │ VARCHAR   │ External booking ID          │
+│ from_station     │ VARCHAR   │                              │
+│ to_station       │ VARCHAR   │                              │
+│ travel_date      │ DATE      │                              │
+│ departure_time   │ TIME      │                              │
+│ arrival_time     │ TIME      │                              │
+│ vehicle_name     │ VARCHAR   │ Train/Bus/Flight name        │
+│ vehicle_number   │ VARCHAR   │ Train no / Flight no         │
+│ class            │ VARCHAR   │ SL / 3AC / 2AC / Economy     │
+│ total_amount     │ DECIMAL   │                              │
+│ passengers       │ JSONB     │ [{name,age,gender,seat}...]  │
+│ raw_response     │ JSONB     │ Full API response            │
+│ created_at       │ TIMESTAMP │                              │
+└──────────────────┴───────────┴──────────────────────────────┘
+
+<span class="blue">stay_bookings</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ id               │ UUID PK   │                              │
+│ user_id          │ UUID FK   │                              │
+│ booking_id       │ UUID FK   │ → bookings.id (linked trip)  │
+│ stay_type        │ ENUM      │ hotel / dharamshala /         │
+│                  │           │ homestay / guesthouse         │
+│ stay_name        │ VARCHAR   │                              │
+│ location         │ POINT     │ PostGIS coordinates           │
+│ check_in         │ DATE      │                              │
+│ check_out        │ DATE      │                              │
+│ price_per_night  │ DECIMAL   │                              │
+│ total_amount     │ DECIMAL   │                              │
+│ status           │ ENUM      │                              │
+│ provider_ref     │ VARCHAR   │                              │
+└──────────────────┴───────────┴──────────────────────────────┘
+
+<span class="blue">payments</span>
+┌──────────────────┬───────────┬──────────────────────────────┐
+│ id               │ UUID PK   │                              │
+│ booking_id       │ UUID FK   │                              │
+│ amount           │ DECIMAL   │                              │
+│ method           │ ENUM      │ upi / card / wallet          │
+│ provider_ref     │ VARCHAR   │ Razorpay payment ID          │
+│ status           │ ENUM      │ pending/success/failed/refund│
+│ refund_amount    │ DECIMAL   │ Nullable                     │
+│ created_at       │ TIMESTAMP │                              │
+└──────────────────┴───────────┴──────────────────────────────┘</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S10 ======== -->
+<div class="sec" id="s10">
+  <span class="sec-label" style="background:var(--green-bg);color:var(--green)">Section 10</span>
+  <h2>Authentication & Payment Flow</h2>
+
+  <h3>Auth Flow (Phone OTP)</h3>
+  <div class="diagram-block"><span class="highlight">AUTHENTICATION FLOW</span>
+
+<span class="green">New User</span>                         <span class="blue">Returning User</span>
+    │                                   │
+    ▼                                   ▼
+Enter Phone No.                    Enter Phone No.
+    │                                   │
+    ▼                                   ▼
+<span class="cyan">/api/user/otp/send</span>              <span class="cyan">/api/user/otp/send</span>
+Send OTP via SMS                   Send OTP via SMS
+    │                                   │
+    ▼                                   ▼
+Enter OTP                          Enter OTP
+    │                                   │
+    ▼                                   ▼
+<span class="cyan">/api/user/otp/verify</span>            <span class="cyan">/api/user/otp/verify</span>
+    │                                   │
+    ▼                                   ▼
+<span class="highlight">Language Selection</span>              <span class="green">→ Home (already set up)</span>
+Choose: हिंदी / తెలుగు / ...
+    │
+    ▼
+<span class="green">→ Home → Start chatting</span>
+
+<span class="comment">WhatsApp users: auto-authenticated via phone number</span>
+<span class="comment">Voice users: caller ID → auto-lookup → if new, ask for name</span></div>
+
+  <h3>Payment Flow</h3>
+  <div class="diagram-block"><span class="highlight">PAYMENT FLOW (UPI — Primary)</span>
+
+Agent confirms booking amount
+         │
+         ├── <span class="blue">App/Chat Mode</span>
+         │   │
+         │   ▼
+         │   Bottom sheet → "Pay ₹580"
+         │   Options: GPay / PhonePe / Other UPI
+         │   │
+         │   ▼
+         │   <span class="cyan">/api/pay/initiate</span> → Razorpay order created
+         │   │
+         │   ▼
+         │   UPI intent fired → user's UPI app opens
+         │   │
+         │   ▼
+         │   User enters PIN → Payment success
+         │   │
+         │   ▼
+         │   <span class="cyan">/api/pay/webhook</span> receives confirmation
+         │   │
+         │   ▼
+         │   Booking executed → E-ticket generated
+         │
+         ├── <span class="purple">Voice Call Mode</span>
+         │   │
+         │   ▼
+         │   Agent says: "₹580 ka UPI link SMS kar raha hu"
+         │   │
+         │   ▼
+         │   <span class="cyan">/api/pay/initiate</span> → generates UPI deeplink
+         │   SMS sent: "Click to pay ₹580: upi://pay?..."
+         │   │
+         │   ▼
+         │   User clicks SMS link → UPI app opens → pays
+         │   │
+         │   ▼
+         │   <span class="cyan">/api/pay/webhook</span> → confirms
+         │   Voice agent says: "Payment ho gaya! Ticket confirm hai"
+         │
+         └── <span class="green">WhatsApp Mode</span>
+             │
+             ▼
+             Inline payment button in WhatsApp
+             (WhatsApp Pay or UPI link)
+             │
+             ▼
+             Same webhook flow → Ticket sent as WhatsApp message</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S11 ======== -->
+<div class="sec" id="s11">
+  <span class="sec-label" style="background:var(--red-bg);color:var(--red)">Section 11</span>
+  <h2>Non-Functional Requirements</h2>
+
+  <table>
+    <thead><tr><th>Category</th><th>Requirement</th><th>Target</th></tr></thead>
+    <tbody>
+      <tr><td>Performance</td><td>Chat response latency (first token)</td><td>&lt; 800ms</td></tr>
+      <tr><td>Performance</td><td>Voice ASR latency</td><td>&lt; 200ms</td></tr>
+      <tr><td>Performance</td><td>Page load (LCP)</td><td>&lt; 2.5s on 3G</td></tr>
+      <tr><td>Availability</td><td>System uptime</td><td>99.9%</td></tr>
+      <tr><td>Scalability</td><td>Concurrent chat sessions</td><td>10,000+ at launch</td></tr>
+      <tr><td>Scalability</td><td>Concurrent voice calls</td><td>100+ at launch</td></tr>
+      <tr><td>Security</td><td>Data encryption</td><td>AES-256 at rest, TLS 1.3 in transit</td></tr>
+      <tr><td>Security</td><td>PII handling</td><td>Aadhaar numbers encrypted, DPDP Act compliant</td></tr>
+      <tr><td>Accessibility</td><td>Font size options</td><td>Small / Medium / Large / Extra Large</td></tr>
+      <tr><td>Accessibility</td><td>High contrast mode</td><td>WCAG AA compliant</td></tr>
+      <tr><td>Offline</td><td>PWA support</td><td>View tickets offline, queue bookings</td></tr>
+      <tr><td>Language</td><td>Supported languages at launch</td><td>Hindi, Telugu, English (Phase 1)</td></tr>
+      <tr><td>Language</td><td>Supported languages at scale</td><td>10+ Indian languages (Phase 3)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S12 ======== -->
+<div class="sec" id="s12">
+  <span class="sec-label" style="background:var(--amber-bg);color:var(--amber)">Section 12</span>
+  <h2>Release Phases & Priority Matrix</h2>
+
+  <div class="diagram-block"><span class="highlight">RELEASE TIMELINE</span>
+
+<span class="blue">PHASE 1 — MVP (Month 1-3)</span>                    <span class="green">PHASE 2 — EXPAND (Month 4-6)</span>
+┌──────────────────────────────┐       ┌──────────────────────────────┐
+│ ✅ Text chat (Hi/Te/En)      │       │ ✅ Voice call agent           │
+│ ✅ Train search + booking    │       │ ✅ Bus search + booking       │
+│ ✅ WhatsApp channel          │       │ ✅ PNR tracking + alerts      │
+│ ✅ UPI payment               │       │ ✅ In-app voice input         │
+│ ✅ Basic stay suggestions    │       │ ✅ 6+ languages               │
+│ ✅ Phone OTP auth            │       │ ✅ Cancellation + refund      │
+│ ✅ Home + Chat + Trips pages │       │ ✅ Saved travelers            │
+│ Target: 500 pilot users      │       │ ✅ Standalone mobile app      │
+└──────────────────────────────┘       │ Target: 5,000 active users   │
+                                       └──────────────────────────────┘
+
+<span class="purple">PHASE 3 — SCALE (Month 7-12)</span>
+┌──────────────────────────────┐
+│ ✅ Flight booking             │
+│ ✅ Multi-leg trip planner     │
+│ ✅ Group/family booking       │
+│ ✅ Smart recommendations      │
+│ ✅ Referral system             │
+│ ✅ B2B white-label API        │
+│ ✅ 10+ languages              │
+│ Target: 50,000+ users         │
+└──────────────────────────────┘</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S13 ======== -->
+<div class="sec" id="s13">
+  <span class="sec-label" style="background:var(--teal-bg);color:var(--teal)">Section 13</span>
+  <h2>Tech Stack Decision Matrix</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Choice</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td>Framework</td><td><strong>Next.js 15 (App Router)</strong></td><td>SSR + API routes + RSC. Single codebase for frontend + backend. Streaming for chat. Edge runtime for low latency.</td></tr>
+      <tr><td>Language</td><td><strong>TypeScript</strong></td><td>Type safety across agents, API routes, and components. Critical for complex data flows.</td></tr>
+      <tr><td>Styling</td><td><strong>Tailwind CSS 4</strong></td><td>Rapid UI iteration. Great with mobile-first design. No CSS file bloat.</td></tr>
+      <tr><td>Database</td><td><strong>PostgreSQL (Neon/Supabase)</strong></td><td>PostGIS for location queries. JSONB for flexible schemas. Serverless-friendly.</td></tr>
+      <tr><td>ORM</td><td><strong>Drizzle ORM</strong></td><td>Lightweight, type-safe, great Next.js integration. Edge-compatible.</td></tr>
+      <tr><td>Cache</td><td><strong>Redis (Upstash)</strong></td><td>Session management, rate limiting, search result caching. Serverless Redis.</td></tr>
+      <tr><td>AI/LLM</td><td><strong>GPT-4o / Claude Sonnet</strong></td><td>Best multilingual understanding. Function calling for structured outputs.</td></tr>
+      <tr><td>Agent Framework</td><td><strong>LangGraph (TypeScript)</strong></td><td>Stateful multi-agent orchestration. Human-in-the-loop for payments.</td></tr>
+      <tr><td>NLP/Translation</td><td><strong>Bhashini API</strong></td><td>Free govt API for 22 Indian languages. ASR + TTS + Translation.</td></tr>
+      <tr><td>Voice Platform</td><td><strong>Exotel + ElevenLabs</strong></td><td>Exotel for India telephony. ElevenLabs for natural TTS voices.</td></tr>
+      <tr><td>Payments</td><td><strong>Razorpay</strong></td><td>Best UPI support. India-first. Quick integration.</td></tr>
+      <tr><td>Hosting</td><td><strong>Vercel + AWS</strong></td><td>Vercel for Next.js edge. AWS for voice/heavy compute.</td></tr>
+      <tr><td>WhatsApp</td><td><strong>WhatsApp Business API (via Gupshup/Twilio)</strong></td><td>India's primary messaging channel. Template + session messages.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== S14 ======== -->
+<div class="sec" id="s14">
+  <span class="sec-label" style="background:var(--green-bg);color:var(--green)">Section 14</span>
+  <h2>Success Metrics & KPIs</h2>
+  <table>
+    <thead><tr><th>Metric</th><th>Phase 1 Target</th><th>Phase 3 Target</th></tr></thead>
+    <tbody>
+      <tr><td>Monthly Active Users</td><td>500</td><td>50,000</td></tr>
+      <tr><td>Bookings per month</td><td>200</td><td>25,000</td></tr>
+      <tr><td>Booking completion rate (chat → ticket)</td><td>35%</td><td>55%</td></tr>
+      <tr><td>Voice call booking success rate</td><td>—</td><td>40%</td></tr>
+      <tr><td>Average time to book (chat)</td><td>&lt; 4 min</td><td>&lt; 2.5 min</td></tr>
+      <tr><td>Languages actively used</td><td>3</td><td>10+</td></tr>
+      <tr><td>NPS (Net Promoter Score)</td><td>40+</td><td>60+</td></tr>
+      <tr><td>Stay attachment rate (% who book accommodation)</td><td>15%</td><td>30%</td></tr>
+      <tr><td>WhatsApp channel share of total bookings</td><td>60%</td><td>45%</td></tr>
+      <tr><td>Revenue per booking (blended)</td><td>₹25</td><td>₹45</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--border);margin-top:48px">
+  <strong>YatraAI PRD v1.0</strong> — Confidential — April 2026<br>
+  Next.js 15 Full-Stack Architecture | Product Requirements Document
+</div>
+
+</div>
+</body>
+</html>

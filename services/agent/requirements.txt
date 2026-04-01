@@ -1,0 +1,11 @@
+fastapi==0.133.1
+uvicorn==0.41.0
+httpx==0.28.1
+pydantic==2.12.5
+python-dotenv==1.2.1
+faiss-cpu==1.13.2
+sentence-transformers==5.2.3
+pytest==8.4.1
+pytest-asyncio==1.0.0
+aiosqlite==0.21.0
+sse-starlette==2.3.6

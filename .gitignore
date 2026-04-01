@@ -1,11 +1,33 @@
+# Python
 venv/
 __pycache__/
 *.pyc
 *.pyo
-.env
 *.egg-info/
 dist/
 build/
+.pytest_cache/
+
+# Next.js
+.next/
+out/
+node_modules/
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# OS
 .DS_Store
 Thumbs.db
+
+# Logs & DB
 *.log
+*.db
+*.db-shm
+*.db-wal
+
+# IDE
+.claude/
+.vscode/

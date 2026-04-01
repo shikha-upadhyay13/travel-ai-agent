@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic UI Design — YatraAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F0EB;--card:#fff;--ink:#151515;--muted:#6B6B6B;--border:#DDD8D0;
+  --red:#DC2626;--red-bg:#FEF2F2;--green:#15803D;--green-bg:#F0FDF4;
+  --blue:#2563EB;--blue-bg:#EFF6FF;--purple:#7C3AED;--purple-bg:#F5F3FF;
+  --orange:#EA580C;--orange-bg:#FFF7ED;--amber:#B45309;--amber-bg:#FFFBEB;
+  --teal:#0D9488;--teal-bg:#F0FDFA;--accent:#C84B31;--accent-bg:#FFF0EC;
+  --warm:#8B5E3C;--warm-bg:#FAF3EC;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);line-height:1.72;-webkit-font-smoothing:antialiased}
+.page{max-width:940px;margin:0 auto;padding:0 36px 80px}
+
+.cover{padding:72px 36px 56px;max-width:940px;margin:0 auto;border-bottom:1px solid var(--border)}
+.cover .doc-badge{display:inline-block;background:var(--purple-bg);color:var(--purple);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;border-radius:16px;margin-bottom:20px}
+.cover h1{font-family:'Instrument Serif',serif;font-size:clamp(32px,4.5vw,50px);line-height:1.15;font-weight:400;margin-bottom:14px}
+.cover h1 em{color:var(--purple);font-style:italic}
+.cover .meta{font-size:14px;color:var(--muted);line-height:1.9}
+.cover .meta strong{color:var(--ink)}
+
+.toc{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px 32px;margin:40px 0}
+.toc h3{font-family:'Instrument Serif',serif;font-size:20px;margin-bottom:14px}
+.toc ol{padding-left:20px}
+.toc li{font-size:14px;margin-bottom:6px;color:var(--muted)}
+.toc li a{color:var(--ink);text-decoration:none;font-weight:500}
+
+.sec{margin-top:52px}
+.sec-label{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:4px;margin-bottom:12px}
+h2{font-family:'Instrument Serif',serif;font-size:30px;font-weight:400;margin-bottom:10px;line-height:1.3}
+h3{font-family:'Instrument Serif',serif;font-size:21px;font-weight:400;margin:26px 0 8px}
+h4{font-size:15px;font-weight:700;margin:20px 0 6px}
+p{font-size:15px;margin-bottom:14px}
+ul,ol{padding-left:22px;margin-bottom:14px}
+li{font-size:14.5px;margin-bottom:6px}
+.divider{height:1px;background:var(--border);margin:48px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;margin:16px 0}
+.card h4{margin-top:0}
+
+.diagram-block{background:#1a1a2e;color:#E0E0E0;border-radius:12px;padding:24px 28px;margin:20px 0;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.75;white-space:pre}
+.diagram-block .comment{color:#6B7280}
+.diagram-block .highlight{color:#F59E0B}
+.diagram-block .green{color:#34D399}
+.diagram-block .blue{color:#60A5FA}
+.diagram-block .red{color:#F87171}
+.diagram-block .purple{color:#A78BFA}
+.diagram-block .cyan{color:#22D3EE}
+
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:13.5px;background:var(--card);border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+thead th{background:var(--ink);color:#fff;padding:11px 14px;text-align:left;font-weight:600;font-size:12.5px}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+@media(max-width:700px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+.callout{border-left:4px solid var(--purple);background:var(--purple-bg);padding:16px 20px;border-radius:0 10px 10px 0;margin:20px 0}
+.callout p{margin-bottom:0;font-size:14px}
+.callout.warm{border-left-color:var(--warm);background:var(--warm-bg)}
+.callout.green{border-left-color:var(--green);background:var(--green-bg)}
+
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:8px}
+.badge-purple{background:var(--purple-bg);color:var(--purple)}
+
+/* Design-specific wireframe styles */
+.wf{background:#FEFCF9;border:2px solid var(--border);border-radius:16px;margin:20px 0;overflow:hidden}
+.wf-title{background:var(--ink);color:#fff;padding:10px 16px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;display:flex;justify-content:space-between}
+.wf-title .wf-tag{background:rgba(255,255,255,0.15);padding:2px 10px;border-radius:10px;font-size:10px}
+.wf-body{padding:20px}
+.wf-phone{max-width:360px;margin:0 auto;background:#fff;border-radius:24px;border:2px solid #D0D0C8;padding:12px;box-shadow:0 8px 32px rgba(0,0,0,0.06)}
+.wf-status-bar{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding:4px 8px 8px;font-weight:500}
+
+.agent-bubble{margin-bottom:10px;display:flex;gap:8px;align-items:flex-start}
+.agent-avatar{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--accent));display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;flex-shrink:0;margin-top:2px}
+.agent-msg{background:var(--blue-bg);padding:10px 14px;border-radius:2px 14px 14px 14px;font-size:12px;line-height:1.6;max-width:80%;color:var(--ink)}
+.agent-msg .typing{display:inline-flex;gap:3px;padding:4px 0}
+.agent-msg .typing span{width:6px;height:6px;border-radius:50%;background:var(--blue);opacity:0.5}
+.user-bubble{margin-bottom:10px;display:flex;justify-content:flex-end}
+.user-msg{background:#F0EDE8;padding:10px 14px;border-radius:14px 14px 2px 14px;font-size:12px;line-height:1.6;max-width:75%;color:var(--ink)}
+
+.agent-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;margin:8px 0 10px 36px;max-width:85%}
+.agent-card-header{padding:8px 14px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px}
+.agent-card-body{padding:0}
+.agent-card-item{padding:10px 14px;font-size:11px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.agent-card-item:first-child{border-top:none}
+.agent-card-item .details{flex:1}
+.agent-card-item .price{font-weight:700;color:var(--green);font-size:12px}
+.agent-card-actions{display:flex;gap:6px;padding:10px 14px;border-top:1px solid var(--border)}
+.chip{display:inline-block;font-size:11px;padding:6px 14px;border-radius:20px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:#fff;color:var(--ink)}
+.chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip.outline{background:transparent;border-color:var(--purple);color:var(--purple)}
+
+.input-bar{display:flex;gap:6px;padding:8px;background:#F5F2ED;border-radius:16px;margin-top:10px;align-items:center}
+.input-field{flex:1;border:none;background:transparent;font-size:12px;padding:6px 8px;font-family:'DM Sans',sans-serif;outline:none}
+.input-btn{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;border:none;cursor:pointer}
+.input-btn.mic{background:var(--blue-bg);color:var(--blue)}
+.input-btn.send{background:var(--accent);color:#fff}
+
+.bottom-nav{display:flex;justify-content:space-around;padding:8px 0 4px;border-top:1px solid var(--border);margin-top:8px}
+.nav-item{text-align:center;font-size:9px;color:var(--muted);font-weight:500}
+.nav-item.active{color:var(--accent)}
+.nav-icon{font-size:16px;display:block;margin-bottom:2px}
+
+/* Comparison table specific */
+.cmp-table td:first-child{font-weight:600;width:200px}
+.cmp-prd{background:var(--accent-bg);color:var(--accent);font-weight:600;font-size:12px;padding:2px 8px;border-radius:6px;display:inline-block}
+.cmp-ui{background:var(--purple-bg);color:var(--purple);font-weight:600;font-size:12px;padding:2px 8px;border-radius:6px;display:inline-block}
+
+/* Principle cards */
+.principle{border-left:4px solid var(--purple);background:var(--card);padding:20px 24px;border-radius:0 12px 12px 0;margin:16px 0}
+.principle h4{color:var(--purple);margin-top:0}
+.principle p{font-size:14px;color:var(--muted);margin-bottom:0}
+</style>
+</head>
+<body>
+
+<!-- ======== COVER ======== -->
+<div class="cover">
+  <span class="doc-badge">Agentic UI Design Document</span>
+  <h1>YatraAI — <em>Agentic UI Design</em><br>Conversational-First Interface System</h1>
+  <div class="meta">
+    <strong>Product:</strong> YatraAI — AI Travel Booking Agent<br>
+    <strong>Version:</strong> 1.0 &nbsp;|&nbsp; <strong>Date:</strong> April 2026<br>
+    <strong>Focus:</strong> Agent-Driven UI Patterns, Conversational Components, Voice UX<br>
+    <strong>Audience:</strong> Design, Frontend Engineering, Product<br>
+    <strong>Status:</strong> <span class="badge badge-purple">Design Spec</span>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- ======== TOC ======== -->
+<div class="toc">
+  <h3>Table of Contents</h3>
+  <ol>
+    <li><a href="#a1">What is Agentic UI? — Design Philosophy</a></li>
+    <li><a href="#a2">Agentic Design Principles (The 7 Laws)</a></li>
+    <li><a href="#a3">Agent Personality & Voice Design</a></li>
+    <li><a href="#a4">Conversation Flow Patterns</a></li>
+    <li><a href="#a5">Component Library — Agentic UI Kit</a></li>
+    <li><a href="#a6">Screen-by-Screen Agentic Wireframes</a></li>
+    <li><a href="#a7">Voice Mode UI/UX Design</a></li>
+    <li><a href="#a8">WhatsApp Channel Design</a></li>
+    <li><a href="#a9">Agent State Machine — UI States</a></li>
+    <li><a href="#a10">Error Handling & Recovery Patterns</a></li>
+    <li><a href="#a11">Accessibility & Inclusive Design</a></li>
+    <li><a href="#a12">Multilingual Typography System</a></li>
+    <li><a href="#a13">Micro-Interactions & Animation Spec</a></li>
+    <li><a href="#a14">Design Tokens & Theme System</a></li>
+  </ol>
+</div>
+
+<!-- ======== A1 ======== -->
+<div class="sec" id="a1">
+  <span class="sec-label" style="background:var(--purple-bg);color:var(--purple)">Section 01</span>
+  <h2>What is Agentic UI? — Design Philosophy</h2>
+
+  <p><strong>Agentic UI</strong> is a design paradigm where the AI agent drives the interface — not the user. Instead of the user navigating menus, filling forms, and making decisions at every step, the <strong>agent asks, the agent fetches, the agent presents, and the agent acts</strong>. The user's role shifts from "operator" to "decision-maker."</p>
+
+  <h3>Traditional UI vs. Agentic UI</h3>
+  <div class="diagram-block"><span class="highlight">TRADITIONAL UI (Form-Based)</span>          <span class="green">AGENTIC UI (Conversation-Based)</span>
+
+User opens app                       User opens app
+    │                                    │
+    ▼                                    ▼
+Sees 6 input fields:                 Agent: "Where do you want to go?"
+From ___  To ___  Date ___               │
+Class ___  Quota ___  Passengers ___     ▼
+    │                                User: "Tirupati, next Friday"
+    ▼                                    │
+User fills each field manually           ▼
+    │                                Agent extracts:
+    ▼                                  from: Hyderabad (auto-detected)
+Clicks "Search"                        to: Tirupati
+    │                                  date: April 4 (next Friday)
+    ▼                                  class: ? (will ask)
+Sees list of 50 trains                   │
+User scrolls, compares, confuses         ▼
+    │                                Agent: "Sleeper or AC?"
+    ▼                                User: "Sleeper"
+Clicks one train                         │
+    │                                    ▼
+Sees another form:                   Agent: "Found 3 trains. Best one
+Passenger 1 Name ___                  departs 6AM, reaches 11AM, ₹340.
+Age ___ Gender ___                    Book this one?"
+Berth ___                            User: "Yes"
+    │                                    │
+    ▼                                    ▼
+Fills form → Clicks "Pay"           Agent: "Done! Ticket booked. ✅
+    │                                 PNR: 4521678901. Need a hotel?"
+    ▼
+Redirected to payment gateway
+    │
+    ▼
+Comes back → "Booking confirmed"
+
+<span class="red">15+ steps, 20+ form fields</span>           <span class="green">5 conversational turns</span>
+<span class="red">Requires literacy + tech skill</span>        <span class="green">Requires only speaking ability</span>
+<span class="red">User drives the interface</span>              <span class="green">Agent drives the interface</span></div>
+
+  <div class="callout">
+    <p><strong>The core insight:</strong> An agentic UI doesn't just put a chatbot on top of forms. It fundamentally reimagines the interaction model. The form still exists in the backend — but the agent fills it, not the user. The user only makes decisions.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A2 ======== -->
+<div class="sec" id="a2">
+  <span class="sec-label" style="background:var(--warm-bg);color:var(--warm)">Section 02</span>
+  <h2>The 7 Laws of YatraAI's Agentic Design</h2>
+
+  <div class="principle">
+    <h4>Law 1: Conversation is the Interface</h4>
+    <p>Every feature is accessible through conversation. There are no hidden settings, no nested menus. If a user says "cancel my Delhi ticket", the agent handles it. The chat IS the app.</p>
+  </div>
+  <div class="principle">
+    <h4>Law 2: The Agent Always Leads</h4>
+    <p>The user should never wonder "what do I do next?" The agent always ends with a question or a suggestion. After booking, it proactively asks about stays. After showing results, it suggests the best option. It's never passive.</p>
+  </div>
+  <div class="principle">
+    <h4>Law 3: Show, Don't Form</h4>
+    <p>Never show a blank form. Show rich cards with real data that the user taps to select. Train results are cards, not table rows. Payment is a bottom sheet with one tap, not a form with 6 fields. Seats are visual grids, not dropdown menus.</p>
+  </div>
+  <div class="principle">
+    <h4>Law 4: One Decision at a Time</h4>
+    <p>Never overwhelm with 50 results. Show the best 3. Never ask 4 questions at once. Ask one. The agent manages complexity so the user doesn't have to.</p>
+  </div>
+  <div class="principle">
+    <h4>Law 5: Language is Invisible</h4>
+    <p>The user never "selects a language from a dropdown." The agent detects language from the first message and mirrors it. If someone types in Telugu, everything — responses, cards, buttons, confirmations — is in Telugu.</p>
+  </div>
+  <div class="principle">
+    <h4>Law 6: Voice and Text are Equals</h4>
+    <p>The voice experience is not a degraded version of the text experience. Voice gets the same agent intelligence, the same booking flow, the same proactive suggestions. It's just a different modality of the same agent.</p>
+  </div>
+  <div class="principle">
+    <h4>Law 7: Transparency Builds Trust</h4>
+    <p>The agent always says what it's doing. "Searching trains..." "Connecting to IRCTC..." "Payment of ₹580 received!" Users never face a blank loading state with no explanation.</p>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A3 ======== -->
+<div class="sec" id="a3">
+  <span class="sec-label" style="background:var(--green-bg);color:var(--green)">Section 03</span>
+  <h2>Agent Personality & Voice Design</h2>
+
+  <h3>Agent Character Profile</h3>
+  <div class="card">
+    <h4>Name: YatraAI (no personified name — it's a helpful assistant, not a character)</h4>
+    <p style="font-size:14px"><strong>Tone:</strong> Warm, respectful, efficient. Like a trusted travel agent at the local railway station who knows every train, speaks your language, and treats every customer with dignity.</p>
+    <p style="font-size:14px"><strong>NOT:</strong> Overly casual / slang-heavy / robotic / corporate / condescending / over-enthusiastic</p>
+    <p style="font-size:14px"><strong>Cultural markers:</strong> Uses "🙏" greeting (appropriate across India). Uses respectful forms ("aap" not "tum" in Hindi). Acknowledges religious/pilgrimage travel with respect ("Tirupati darshan ke liye? Bahut accha!").</p>
+  </div>
+
+  <h3>Voice Tone per Scenario</h3>
+  <table>
+    <thead><tr><th>Scenario</th><th>Tone</th><th>Example (Hindi)</th></tr></thead>
+    <tbody>
+      <tr><td>Greeting</td><td>Warm, inviting</td><td>"🙏 नमस्ते! बताइए कहाँ जाना है?"</td></tr>
+      <tr><td>Search results</td><td>Helpful, concise</td><td>"3 trains मिली हैं। सबसे अच्छी:"</td></tr>
+      <tr><td>Booking confirmed</td><td>Celebratory, reassuring</td><td>"✅ बुकिंग हो गई! Ticket WhatsApp पर भेज रहा हूँ"</td></tr>
+      <tr><td>No availability</td><td>Empathetic, solution-oriented</td><td>"अभी seats नहीं हैं, लेकिन कल सुबह Tatkal try करें?"</td></tr>
+      <tr><td>Payment failed</td><td>Calm, supportive</td><td>"Payment नहीं हुआ — कोई बात नहीं, फिर से try करें"</td></tr>
+      <tr><td>Error/confusion</td><td>Honest, humble</td><td>"मुझे सही से समझ नहीं आया। क्या आप दोबारा बता सकते हैं?"</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A4 ======== -->
+<div class="sec" id="a4">
+  <span class="sec-label" style="background:var(--blue-bg);color:var(--blue)">Section 04</span>
+  <h2>Conversation Flow Patterns</h2>
+
+  <h3>Pattern 1: Progressive Slot Filling</h3>
+  <div class="diagram-block"><span class="highlight">PROGRESSIVE SLOT FILLING</span>
+<span class="comment">Agent fills required "slots" one at a time through conversation</span>
+
+Required Slots for Train Booking:
+┌──────────┬──────────┬──────────┬──────────┬──────────┐
+│  FROM    │   TO     │  DATE    │  CLASS   │PASSENGERS│
+│  ____    │  ____    │  ____    │  ____    │  ____    │
+└──────────┴──────────┴──────────┴──────────┴──────────┘
+
+<span class="green">Turn 1:</span> User: "मुझे कल दिल्ली जाना है"
+         Slots filled: <span class="green">FROM=auto(HYD)</span> <span class="green">TO=Delhi</span> <span class="green">DATE=tomorrow</span>
+         Missing: CLASS, PASSENGERS
+
+<span class="green">Turn 2:</span> Agent: "किस class में? Sleeper, 3AC, या 2AC?"
+         User: "3AC"
+         Slots filled: <span class="green">CLASS=3AC</span>
+         Missing: PASSENGERS
+
+<span class="green">Turn 3:</span> Agent: "कितने लोग जाएंगे?"
+         User: "मैं अकेला"
+         Slots filled: <span class="green">PASSENGERS=1(self)</span>
+         ALL SLOTS FILLED → <span class="highlight">Trigger Search</span>
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="comment">KEY RULE: If user provides multiple slots in one message,</span>
+<span class="comment">the agent doesn't re-ask. It fills what it can and asks</span>
+<span class="comment">only for what's missing.</span>
+
+<span class="blue">Example of efficient fill:</span>
+User: "Book Rajdhani Delhi to Mumbai tomorrow 2AC for 2 people"
+Slots filled: ALL → Skip directly to passenger details</div>
+
+  <h3>Pattern 2: Confirmation Before Action</h3>
+  <div class="diagram-block"><span class="highlight">CONFIRM → ACT → REPORT</span>
+<span class="comment">The agent ALWAYS confirms before spending money or making irreversible actions</span>
+
+Agent: "यह रहा आपका booking summary:
+
+  🚆 Rajdhani Express (12437)
+  📍 Hyderabad → Delhi
+  📅 7 April, 6:15 PM → 6:45 AM
+  💺 3AC · 1 passenger
+  💰 ₹2,100
+
+  Confirm करें?"
+
+<span class="green">Quick Reply Chips: [✅ Confirm & Pay]  [✏️ Change]  [❌ Cancel]</span>
+
+<span class="comment">User taps "Confirm & Pay" → Payment sheet slides up</span>
+<span class="comment">User taps "Change" → Agent asks "What do you want to change?"</span>
+<span class="comment">User taps "Cancel" → Agent says "Koi baat nahi, aur kuch help?"</span></div>
+
+  <h3>Pattern 3: Proactive Suggestion After Completion</h3>
+  <div class="diagram-block"><span class="highlight">PROACTIVE POST-BOOKING FLOW</span>
+
+Booking confirmed
+    │
+    ▼
+Agent: "✅ Booking done! E-ticket भेज दिया।"
+    │
+    ▼
+<span class="purple">Agent proactively checks:</span>
+├── Is destination a pilgrimage city? → Suggest dharamshalas
+├── Is travel date > 1 day? → Suggest hotels
+├── Is there a connecting journey? → Suggest bus/flight
+├── Is user a senior citizen? → Remind about wheelchair service
+└── Is arrival time late night? → Suggest waiting room/retiring room
+
+Agent: "दिल्ली में रुकना है तो ये options हैं:
+        🙏 Gurudwara Bangla Sahib (Free)
+        🏨 Retiring Room (₹350)
+        🏢 OYO Karol Bagh (₹899)"
+
+<span class="comment">The agent never stops at "booking done." It anticipates the next need.</span></div>
+
+  <h3>Pattern 4: Graceful Disambiguation</h3>
+  <div class="diagram-block"><span class="highlight">HANDLING AMBIGUOUS INPUT</span>
+
+User: "मुझे बैंगलोर जाना है"
+Agent detects: TO=Bangalore, but missing everything else
+
+<span class="red">BAD (Traditional chatbot):</span>
+"Please enter: From station, Date of journey, Class, Number of passengers"
+→ This is just a form in chat form. Not agentic.
+
+<span class="green">GOOD (Agentic):</span>
+"बैंगलोर! 👍 कब जाना है — कोई specific date?"
+→ One question. Warm. Natural.
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+User: "Bangalore"
+<span class="comment">Which Bangalore? There are 2 stations.</span>
+
+<span class="red">BAD:</span>
+"Select station: 1. KSR Bengaluru (SBC) 2. Yeshwanthpur (YPR)"
+→ User may not know station codes
+
+<span class="green">GOOD:</span>
+"Bangalore City (main station) ya Yeshwanthpur?
+ Agar pata nahi toh main city station laga deta hoon 👍"
+→ Offers a smart default. Doesn't demand the user know codes.</div>
+
+  <h3>Pattern 5: Multi-Turn Correction</h3>
+  <div class="diagram-block"><span class="highlight">USER CHANGES MIND MID-FLOW</span>
+
+Agent: "Sleeper class mein 3 trains mili..."
+User: "Actually, AC mein dikhao"
+
+<span class="red">BAD:</span> "Please start a new search with different parameters"
+<span class="green">GOOD:</span> "AC mein dekhta hoon..." → Re-searches with class=AC
+        → Shows new results without losing other context (date, route)
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+Agent: About to book Rajdhani 3AC...
+User: "Wait, ek aur passenger add karo — meri wife bhi jayegi"
+
+<span class="green">GOOD:</span> "Wife ka naam aur age batayiye, unko bhi add karta hoon"
+→ Agent adds to passenger list without restarting booking flow</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A5 ======== -->
+<div class="sec" id="a5">
+  <span class="sec-label" style="background:var(--orange-bg);color:var(--orange)">Section 05</span>
+  <h2>Component Library — Agentic UI Kit</h2>
+
+  <h3>Agentic Component Taxonomy</h3>
+  <div class="diagram-block"><span class="highlight">AGENTIC UI COMPONENTS</span>
+
+<span class="blue">1. MESSAGE BUBBLES</span>
+┌────────────────────────────────────────────┐
+│ <span class="green">Agent Bubble</span>                                │
+│ ┌─┐ ┌──────────────────────────────┐       │
+│ │🤖│ │ Agent message text           │       │
+│ └─┘ │ Can contain inline markdown  │       │
+│     └──────────────────────────────┘       │
+│                                            │
+│ <span class="blue">User Bubble</span>                                 │
+│            ┌──────────────────────────┐    │
+│            │ User message text    │    │    │
+│            └──────────────────────────┘    │
+│                                            │
+│ <span class="purple">Typing Indicator</span>                           │
+│ ┌─┐ ┌──────────┐                           │
+│ │🤖│ │ ● ● ●    │  "Searching trains..."   │
+│ └─┘ └──────────┘                           │
+└────────────────────────────────────────────┘
+
+<span class="blue">2. RESULT CARDS (Inline in chat)</span>
+┌────────────────────────────────────────────┐
+│ ┌──────────────────────────────────────┐   │
+│ │ 🚆 Train Results              3 found│   │
+│ ├──────────────────────────────────────┤   │
+│ │ Telangana Exp · 12723               │   │
+│ │ 06:00 → 22:30 · 16h 30m            │   │
+│ │ SL ₹580 · 3AC ₹1540   [42 seats]  │   │
+│ ├──────────────────────────────────────┤   │
+│ │ Rajdhani · 12437                    │   │
+│ │ 18:15 → 06:45 · 12h 30m            │   │
+│ │ 3AC ₹2100 · 2AC ₹3050  [18 seats]  │   │
+│ └──────────────────────────────────────┘   │
+└────────────────────────────────────────────┘
+
+<span class="blue">3. QUICK REPLY CHIPS</span>
+┌────────────────────────────────────────────┐
+│  [Sleeper] [3AC] [2AC] [Any class]         │
+│                                            │
+│  [✅ Book this] [Show more] [Change date]  │
+│                                            │
+│  [Yes ✓] [No ✗]                            │
+└────────────────────────────────────────────┘
+
+<span class="blue">4. PAYMENT SHEET (Bottom Sheet)</span>
+┌────────────────────────────────────────────┐
+│          ━━━ (drag handle)                 │
+│                                            │
+│  Pay ₹2,100                                │
+│                                            │
+│  ┌──────┐ ┌──────┐ ┌──────┐               │
+│  │ GPay │ │PhonPe│ │ UPI  │               │
+│  └──────┘ └──────┘ └──────┘               │
+│                                            │
+│  [━━━━━━━━ Pay Now ━━━━━━━━]              │
+│                                            │
+│  🔒 Secured by Razorpay                   │
+└────────────────────────────────────────────┘
+
+<span class="blue">5. STATUS CARDS</span>
+┌────────────────────────────────────────────┐
+│ ✅ Booking Confirmed                       │
+│ ┌──────────────────────────────────────┐   │
+│ │ PNR: 4521678901                      │   │
+│ │ 🚆 Telangana Exp · 6 Apr · SL       │   │
+│ │ HYD 06:00 → NDLS 22:30              │   │
+│ │ Passenger: Lakshmi Devi, 65, F       │   │
+│ │ Berth: S4-32 (Lower) ✅              │   │
+│ ├──────────────────────────────────────┤   │
+│ │ [📱 View Ticket] [📤 Share] [🏨 Stay]│   │
+│ └──────────────────────────────────────┘   │
+└────────────────────────────────────────────┘
+
+<span class="blue">6. STAY RECOMMENDATION CARDS</span>
+┌────────────────────────────────────────────┐
+│ 🏨 Stays near Delhi Station               │
+│ ┌──────────────────────────────────────┐   │
+│ │ [📷 Photo]  Gurudwara Bangla Sahib   │   │
+│ │             Free · ★★★★☆ · 2.1km    │   │
+│ │             [Book]                    │   │
+│ ├──────────────────────────────────────┤   │
+│ │ [📷 Photo]  OYO Karol Bagh          │   │
+│ │             ₹899/night · ★★★★ · AC  │   │
+│ │             [Book]                    │   │
+│ └──────────────────────────────────────┘   │
+└────────────────────────────────────────────┘
+
+<span class="blue">7. VOICE MODE OVERLAY</span>
+┌────────────────────────────────────────────┐
+│                                            │
+│            ┌──────────┐                    │
+│            │  🎙️      │                    │
+│            │ Listening │                    │
+│            │  ~~~~     │ (waveform)         │
+│            └──────────┘                    │
+│                                            │
+│  Speaking in: తెలుగు                        │
+│  "నేను రేపు తిరుపతి..."                       │
+│  (live transcription)                      │
+│                                            │
+│            [⏹ Stop]                        │
+└────────────────────────────────────────────┘</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A6 ======== -->
+<div class="sec" id="a6">
+  <span class="sec-label" style="background:var(--teal-bg);color:var(--teal)">Section 06</span>
+  <h2>Screen-by-Screen Agentic Wireframes</h2>
+
+  <h3>Screen 1: Chat — Booking Flow (Complete)</h3>
+  <div class="wf">
+    <div class="wf-title">
+      <span>💬 Chat — Full Booking Conversation</span>
+      <span class="wf-tag">Mobile 390×844</span>
+    </div>
+    <div class="wf-body">
+      <div class="wf-phone">
+        <div class="wf-status-bar"><span>9:41</span><span>YatraAI</span><span>🌐 हिंदी  📞</span></div>
+        
+        <div class="agent-bubble">
+          <div class="agent-avatar">Y</div>
+          <div class="agent-msg">🙏 नमस्ते! कहाँ जाना है आज?</div>
+        </div>
+        <div class="user-bubble">
+          <div class="user-msg">कल दिल्ली जाना है</div>
+        </div>
+        <div class="agent-bubble">
+          <div class="agent-avatar">Y</div>
+          <div class="agent-msg">हैदराबाद → दिल्ली, कल (6 अप्रैल)। किस class में?</div>
+        </div>
+        <div style="display:flex;gap:6px;margin:0 0 10px 36px;flex-wrap:wrap">
+          <div class="chip active">Sleeper</div>
+          <div class="chip">3AC</div>
+          <div class="chip">2AC</div>
+        </div>
+        <div class="agent-bubble">
+          <div class="agent-avatar">Y</div>
+          <div class="agent-msg">🔍 Sleeper trains देख रहा हूँ...</div>
+        </div>
+        
+        <div class="agent-card">
+          <div class="agent-card-header" style="background:var(--blue-bg);color:var(--blue)">🚆 3 Trains Found — 6 Apr</div>
+          <div class="agent-card-item">
+            <div class="details">
+              <div style="font-weight:600">Telangana Exp (12723)</div>
+              <div style="font-size:10px;color:var(--muted)">06:00 → 22:30 · 16h 30m</div>
+            </div>
+            <div class="price">₹580</div>
+          </div>
+          <div class="agent-card-item" style="background:var(--green-bg)">
+            <div class="details">
+              <div style="font-weight:600">⭐ AP Express (12723) — Best</div>
+              <div style="font-size:10px;color:var(--muted)">17:30 → 10:15 · 16h 45m</div>
+            </div>
+            <div class="price">₹620</div>
+          </div>
+          <div class="agent-card-item">
+            <div class="details">
+              <div style="font-weight:600">GT Express (12615)</div>
+              <div style="font-size:10px;color:var(--muted)">19:00 → 12:00 · 17h</div>
+            </div>
+            <div class="price">₹600</div>
+          </div>
+          <div class="agent-card-actions">
+            <div class="chip active" style="font-size:10px">⭐ AP Express Book करें</div>
+            <div class="chip" style="font-size:10px">और दिखाएं</div>
+          </div>
+        </div>
+
+        <div class="agent-bubble">
+          <div class="agent-avatar">Y</div>
+          <div class="agent-msg">AP Express सबसे अच्छी है — 42 seats available। बुक करें?</div>
+        </div>
+        
+        <div class="input-bar">
+          <input class="input-field" placeholder="हिंदी में टाइप करें..." readonly>
+          <button class="input-btn mic">🎙</button>
+          <button class="input-btn send">→</button>
+        </div>
+
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="nav-icon">🏠</span>Home</div>
+          <div class="nav-item active"><span class="nav-icon">💬</span>Chat</div>
+          <div class="nav-item"><span class="nav-icon">🎫</span>Trips</div>
+          <div class="nav-item"><span class="nav-icon">🏨</span>Stays</div>
+          <div class="nav-item"><span class="nav-icon">👤</span>Me</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Screen 2: Payment Confirmation (Agentic)</h3>
+  <div class="wf">
+    <div class="wf-title">
+      <span>💳 Payment — Agent-Driven Confirmation</span>
+      <span class="wf-tag">Bottom Sheet Pattern</span>
+    </div>
+    <div class="wf-body">
+      <div class="wf-phone">
+        <div class="wf-status-bar"><span>9:43</span><span>YatraAI</span><span>🔒</span></div>
+        
+        <div class="agent-bubble">
+          <div class="agent-avatar">Y</div>
+          <div class="agent-msg">
+            ✅ Booking summary:<br><br>
+            🚆 AP Express (12723)<br>
+            📍 HYD → NDLS<br>
+            📅 6 Apr · 17:30 → 10:15<br>
+            💺 Sleeper · 1 passenger<br>
+            👤 Lakshmi Devi, 65, F (Lower berth)<br><br>
+            💰 <strong>₹620</strong>
+          </div>
+        </div>
+
+        <div style="background:#fff;border-top:2px solid var(--border);border-radius:20px 20px 0 0;padding:20px;margin-top:12px;box-shadow:0 -4px 20px rgba(0,0,0,0.08)">
+          <div style="width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px"></div>
+          <div style="text-align:center;font-size:14px;font-weight:700;margin-bottom:4px">Pay ₹620</div>
+          <div style="text-align:center;font-size:11px;color:var(--muted);margin-bottom:16px">AP Express · Sleeper · 6 Apr</div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <div style="flex:1;text-align:center;padding:12px;border:1.5px solid var(--green);border-radius:12px;font-size:12px;font-weight:600;color:var(--green);background:var(--green-bg)">
+              📱 GPay
+            </div>
+            <div style="flex:1;text-align:center;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-size:12px;color:var(--muted)">
+              📱 PhonePe
+            </div>
+            <div style="flex:1;text-align:center;padding:12px;border:1.5px solid var(--border);border-radius:12px;font-size:12px;color:var(--muted)">
+              💳 Card
+            </div>
+          </div>
+          <div style="background:var(--accent);color:#fff;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:14px">
+            Pay ₹620 with GPay →
+          </div>
+          <div style="text-align:center;font-size:10px;color:var(--muted);margin-top:10px">🔒 Secured by Razorpay · Your data is encrypted</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Screen 3: Voice Agent Active Screen</h3>
+  <div class="wf">
+    <div class="wf-title">
+      <span>📞 Voice Agent — Active Call</span>
+      <span class="wf-tag">In-App Call UI</span>
+    </div>
+    <div class="wf-body">
+      <div class="wf-phone">
+        <div style="background:linear-gradient(180deg,#1a1a2e 0%,#16213e 100%);border-radius:20px;padding:30px 20px;color:#fff;text-align:center;min-height:440px;display:flex;flex-direction:column;justify-content:space-between">
+          <div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.5);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px">Voice Agent Active</div>
+            <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--accent));margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 30px rgba(124,58,237,0.3)">🎙️</div>
+            <div style="font-size:16px;font-weight:600;margin-bottom:4px">YatraAI</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:24px">Speaking in తెలుగు · 02:34</div>
+          </div>
+          <div style="text-align:left;padding:16px;background:rgba(255,255,255,0.06);border-radius:14px;margin-bottom:20px;font-size:12px;line-height:1.8">
+            <div style="color:rgba(255,255,255,0.4);font-size:10px;margin-bottom:6px">LIVE TRANSCRIPT</div>
+            <div style="color:rgba(96,165,250,0.9)">🤖 "3 trains ఉన్నాయి. మొదటిది Vande Bharat, ఉదయం 6 గంటలకు..."</div>
+            <div style="color:rgba(255,255,255,0.8);margin-top:4px">👤 "మొదటిది book చేయండి"</div>
+            <div style="color:rgba(96,165,250,0.9);margin-top:4px">🤖 "₹420 UPI link SMS చేస్తున్నాను..."</div>
+          </div>
+          <div style="display:flex;justify-content:center;gap:20px">
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">🔇</div>
+            <div style="width:56px;height:56px;border-radius:50%;background:#DC2626;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 15px rgba(220,38,38,0.4)">📞</div>
+            <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">⌨️</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A7 ======== -->
+<div class="sec" id="a7">
+  <span class="sec-label" style="background:var(--purple-bg);color:var(--purple)">Section 07</span>
+  <h2>Voice Mode UI/UX Design</h2>
+
+  <h3>Voice Interaction Flow</h3>
+  <div class="diagram-block"><span class="highlight">VOICE MODE — COMPLETE UX FLOW</span>
+
+<span class="blue">ENTRY POINTS FOR VOICE</span>
+├── <span class="green">In-App Microphone</span> → Tap 🎙️ in chat → Push-to-talk
+├── <span class="green">Call Agent Button</span> → Tap 📞 in header → Initiates voice call
+├── <span class="green">External Phone Call</span> → Dial +91-XXXX → IVR → Agent
+└── <span class="green">WhatsApp Voice Note</span> → Send voice message → Transcribed → Reply
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="blue">PHONE CALL IVR FLOW</span>
+
+User dials +91-XXXX-XXXXXX
+    │
+    ▼
+<span class="cyan">Auto-greeting</span> (2 seconds):
+"YatraAI mein aapka swagat hai.
+ Hindi ke liye 1 dabayein.
+ For English, press 2.
+ తెలుగు కోసం 3 నొక్కండి."
+    │
+    ▼
+User presses 1 (or says "Hindi")
+    │
+    ▼
+<span class="green">AI Agent takes over</span>:
+"🙏 Namaste! Batayiye kahan jana hai?"
+    │
+    ▼
+<span class="comment">Normal conversation flow (same as text)</span>
+<span class="comment">Agent uses same orchestrator, same tools</span>
+<span class="comment">Responses are spoken via TTS</span>
+    │
+    ▼
+<span class="highlight">Payment trigger:</span>
+Agent: "₹620 ka payment UPI se hoga.
+        Aapke phone par SMS aa raha hai,
+        us link par click karke pay karein."
+    │
+    ▼
+SMS sent: "YatraAI: Pay ₹620 for AP Express
+           Click: upi://pay?pa=yatraai@ybl&am=620..."
+    │
+    ▼
+User clicks → Pays via UPI app
+    │
+    ▼
+Agent (on call): "Payment ho gaya!
+                   Ticket confirm hai.
+                   PNR number SMS kar diya hai.
+                   Aur kuch help chahiye?"
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="blue">VOICE UX RULES</span>
+1. Agent speaks in <span class="green">short sentences</span> (max 2-3 lines per turn)
+2. Agent <span class="green">pauses naturally</span> between options (not a continuous stream)
+3. Agent <span class="green">repeats numbers slowly</span>: "PNR hai: 4-5-2-1-6-7-8-9-0-1"
+4. Agent <span class="green">confirms before action</span>: "Confirm karu? Haan ya na?"
+5. Agent handles <span class="green">interruption</span>: user can speak mid-sentence
+6. Agent handles <span class="green">silence</span>: "Aap sun rahe hain? Koi aur help?"
+7. <span class="red">Never</span> ask user to "press 1 for X" after initial IVR
+   → Once AI agent is active, it's pure conversation</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A8 ======== -->
+<div class="sec" id="a8">
+  <span class="sec-label" style="background:var(--green-bg);color:var(--green)">Section 08</span>
+  <h2>WhatsApp Channel Design</h2>
+
+  <div class="diagram-block"><span class="highlight">WHATSAPP CONVERSATION LAYOUT</span>
+
+<span class="blue">WhatsApp Chat Thread: YatraAI ✅ (verified business)</span>
+
+┌──────────────────────────────────────────────┐
+│ <span class="green">YatraAI ✅</span>                      online        │
+├──────────────────────────────────────────────┤
+│                                              │
+│  ┌─────────────────────────────────┐         │
+│  │ 🙏 Namaste! Main YatraAI hoon. │         │
+│  │ Kahan jana hai batayiye!        │         │
+│  │                                 │         │
+│  │ Quick options:                  │         │
+│  │ [🚆 Train] [🚌 Bus] [✈️ Flight]│         │
+│  └─────────────────────────────────┘         │
+│                                              │
+│         ┌──────────────────────────┐         │
+│         │ Tirupati jana hai 10     │         │
+│         │ tarikh ko                │         │
+│         └──────────────────────────┘         │
+│                                              │
+│  ┌─────────────────────────────────┐         │
+│  │ Hyderabad → Tirupati, 10 Apr   │         │
+│  │ 🔍 Trains dhoondh raha hoon... │         │
+│  └─────────────────────────────────┘         │
+│                                              │
+│  ┌─────────────────────────────────┐         │
+│  │ 🚆 *3 Trains Found*            │         │
+│  │                                 │         │
+│  │ 1️⃣ *Vande Bharat (20703)*      │         │
+│  │    06:00 → 11:30 · ₹420 CC     │         │
+│  │    ✅ 56 seats available        │         │
+│  │                                 │         │
+│  │ 2️⃣ *Rayalaseema Exp (17488)*   │         │
+│  │    07:30 → 14:00 · ₹180 SL     │         │
+│  │    ✅ 120 seats                 │         │
+│  │                                 │         │
+│  │ 3️⃣ *Tirumala Exp (17235)*      │         │
+│  │    22:00 → 04:30 · ₹180 SL     │         │
+│  │    ⚠️ RAC 8                     │         │
+│  │                                 │         │
+│  │ Reply 1, 2, or 3 to book       │         │
+│  └─────────────────────────────────┘         │
+│                                              │
+│         ┌──────────────────────────┐         │
+│         │ 1                        │         │
+│         └──────────────────────────┘         │
+│                                              │
+│  ┌─────────────────────────────────┐         │
+│  │ ✅ *Booking Confirmed!*         │         │
+│  │                                 │         │
+│  │ 🚆 Vande Bharat · 10 Apr       │         │
+│  │ HYD 06:00 → TPTY 11:30         │         │
+│  │ PNR: *6782345901*               │         │
+│  │ Seat: C5-42                     │         │
+│  │                                 │         │
+│  │ 📎 E-ticket attached below      │         │
+│  │                                 │         │
+│  │ 🏨 Tirupati mein rukhna hai?    │         │
+│  │ Reply "haan" for stay options   │         │
+│  └─────────────────────────────────┘         │
+│                                              │
+│  📎 e-ticket-6782345901.pdf                  │
+│                                              │
+│ ┌────────────────────────────────────┐       │
+│ │ Type a message...           📎 🎤 │       │
+│ └────────────────────────────────────┘       │
+└──────────────────────────────────────────────┘
+
+<span class="comment">WhatsApp Design Rules:</span>
+<span class="comment">• Use WhatsApp formatting: *bold*, _italic_, ~strike~</span>
+<span class="comment">• Numbered options (1, 2, 3) — user replies with number</span>
+<span class="comment">• Quick reply buttons for binary choices (max 3 buttons)</span>
+<span class="comment">• E-ticket sent as PDF attachment</span>
+<span class="comment">• Voice notes accepted → transcribed → processed</span>
+<span class="comment">• No images/graphics heavy messages (slow on 2G)</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A9 ======== -->
+<div class="sec" id="a9">
+  <span class="sec-label" style="background:var(--amber-bg);color:var(--amber)">Section 09</span>
+  <h2>Agent State Machine — UI States</h2>
+
+  <div class="diagram-block"><span class="highlight">AGENT UI STATE MACHINE</span>
+
+<span class="cyan">┌─────────────┐</span>
+<span class="cyan">│    IDLE      │</span> ← Default state. Agent greeting shown.
+<span class="cyan">│  "Ask me"    │</span>    Input bar active. Quick action chips visible.
+<span class="cyan">└──────┬──────┘</span>
+       │ User sends message
+       ▼
+<span class="blue">┌─────────────┐</span>
+<span class="blue">│  THINKING    │</span> ← Agent processing. Typing indicator shown.
+<span class="blue">│  "● ● ●"    │</span>    Contextual label: "Understanding...", "Searching..."
+<span class="blue">└──────┬──────┘</span>    Input bar disabled (prevents double-send).
+       │
+       ├── Intent clear → ▼
+       │
+<span class="green">┌─────────────┐</span>
+<span class="green">│  SEARCHING   │</span> ← Calling external API. Animated search indicator.
+<span class="green">│  "🔍 trains" │</span>    "Searching trains on IRCTC..."
+<span class="green">└──────┬──────┘</span>    Cancel button visible.
+       │
+       ├── Results found → ▼
+       │
+<span class="highlight">┌─────────────┐</span>
+<span class="highlight">│  PRESENTING  │</span> ← Results cards rendered inline.
+<span class="highlight">│  "3 trains"  │</span>    Quick reply chips below cards.
+<span class="highlight">└──────┬──────┘</span>    Agent recommends best option.
+       │
+       ├── User selects → ▼
+       │
+<span class="purple">┌─────────────┐</span>
+<span class="purple">│  CONFIRMING  │</span> ← Summary card shown.
+<span class="purple">│  "₹620 pay?" │</span>    Confirm / Edit / Cancel chips.
+<span class="purple">└──────┬──────┘</span>    This is the "human-in-the-loop" moment.
+       │
+       ├── User confirms → ▼
+       │
+<span class="red">┌─────────────┐</span>
+<span class="red">│  PAYING      │</span> ← Payment bottom sheet active.
+<span class="red">│  "₹620..."   │</span>    UPI/Card options shown.
+<span class="red">└──────┬──────┘</span>    Waiting for payment webhook.
+       │
+       ├── Payment success → ▼
+       │
+<span class="green">┌─────────────┐</span>
+<span class="green">│  COMPLETED   │</span> ← Success state. Confetti? ✅ animation.
+<span class="green">│  "✅ Booked!" │</span>    Booking card with PNR shown.
+<span class="green">└──────┬──────┘</span>    Stay suggestion triggered.
+       │
+       ├── Proactive suggestion → ▼
+       │
+<span class="purple">┌─────────────┐</span>
+<span class="purple">│  SUGGESTING  │</span> ← Post-booking recommendations.
+<span class="purple">│  "🏨 Stay?"  │</span>    Stay cards shown. Optional action.
+<span class="purple">└──────┬──────┘</span>
+       │
+       └── User done → back to IDLE
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="red">ERROR STATES</span>
+├── <span class="red">NO_RESULTS</span>    → "Koi train nahi mili. Agle din try karein?"
+├── <span class="red">API_ERROR</span>     → "IRCTC se connection nahi ho raha. 2 min baad try karein"
+├── <span class="red">PAYMENT_FAIL</span>  → "Payment nahi hua. Dobara try karein?"
+├── <span class="red">SESSION_EXPIRED</span>→ "Aapka session expire ho gaya. Start from where you left?"
+└── <span class="red">MISUNDERSTOOD</span> → "Samajh nahi aaya. Kya aap dobara bata sakte hain?"</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A10 ======== -->
+<div class="sec" id="a10">
+  <span class="sec-label" style="background:var(--red-bg);color:var(--red)">Section 10</span>
+  <h2>Error Handling & Recovery Patterns</h2>
+
+  <div class="diagram-block"><span class="highlight">AGENTIC ERROR HANDLING — EVERY ERROR IS A CONVERSATION</span>
+
+<span class="blue">PRINCIPLE: Never show a generic error screen. Always speak through it.</span>
+
+<span class="red">1. API TIMEOUT</span>
+Traditional: ⚠️ "Error 504: Gateway Timeout"
+Agentic:     "IRCTC thoda slow chal raha hai abhi.
+              2 options hain:
+              1. 30 seconds wait karein
+              2. Main baad mein try karke WhatsApp pe bataunga"
+              <span class="green">[Wait] [Notify me later]</span>
+
+<span class="red">2. NO TRAINS FOUND</span>
+Traditional: "No results found. Try different dates."
+Agentic:     "Is date pe koi train nahi hai 😔
+              Lekin:
+              • Kal (7 Apr) ko 5 trains hain
+              • Bus se 8 ghante mein pahunch sakte hain (₹450)
+              • Flight bhi hai ₹2,800 mein
+              Kya dekhna hai?"
+              <span class="green">[Tomorrow trains] [Bus today] [Flight]</span>
+
+<span class="red">3. PAYMENT FAILED</span>
+Traditional: "Payment failed. Transaction ID: XYZ123"
+Agentic:     "Payment nahi hua — koi baat nahi!
+              Aapke paise deducted nahi hue hain ✅
+              Dobara try karein ya doosra UPI use karein?"
+              <span class="green">[Retry GPay] [Try PhonePe] [Cancel booking]</span>
+
+<span class="red">4. MISUNDERSTOOD INTENT</span>
+Traditional: "I didn't understand. Please rephrase."
+Agentic:     "Hmm, mujhe lagta hai aap train booking chahte hain.
+              Kya yeh sahi hai?
+              • Hyderabad → Delhi
+              • 6 April"
+              <span class="green">[Haan, sahi hai] [Nahi, kuch aur]</span>
+
+<span class="red">5. BOOKING WAITLISTED</span>
+Traditional: "Your ticket is waitlisted (WL 15)"
+Agentic:     "Ticket waitlisted hai (WL 15).
+              Chances: ~70% confirm hoga 🤞
+              Options:
+              1. Book karein — auto-cancel if not confirmed
+              2. Tatkal try karein kal 10 baje
+              3. Doosri train dekhein"
+              <span class="green">[Book WL] [Remind for Tatkal] [Other trains]</span></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A11 ======== -->
+<div class="sec" id="a11">
+  <span class="sec-label" style="background:var(--green-bg);color:var(--green)">Section 11</span>
+  <h2>Accessibility & Inclusive Design</h2>
+
+  <table>
+    <thead><tr><th>Feature</th><th>Implementation</th><th>Benefit</th></tr></thead>
+    <tbody>
+      <tr><td>Font Size Control</td><td>4 levels: 14px / 16px / 20px / 24px. Persistent per user.</td><td>Elderly users with vision difficulties</td></tr>
+      <tr><td>High Contrast Mode</td><td>Dark text on light bg. No low-contrast grays. WCAG AA minimum.</td><td>Outdoor use, vision impairment</td></tr>
+      <tr><td>Voice-First Interaction</td><td>Every action possible via voice — no screen reading needed</td><td>Visually impaired, illiterate users</td></tr>
+      <tr><td>Large Touch Targets</td><td>Min 48x48px touch targets. Chips min 44px height.</td><td>Motor difficulties, elderly users</td></tr>
+      <tr><td>Simple Language</td><td>Agent uses simple, short sentences. No jargon (no "PNR waitlisted"). Says "ticket pakka hua" not "confirmed".</td><td>Low-literacy users</td></tr>
+      <tr><td>Screen Reader Support</td><td>All components ARIA-labeled. Results announced sequentially.</td><td>Blind/low-vision users</td></tr>
+      <tr><td>Offline Ticket Access</td><td>PWA caches last booking. Ticket viewable without internet.</td><td>Rural areas with intermittent connectivity</td></tr>
+      <tr><td>SMS Fallback</td><td>Every ticket also sent via SMS (not just WhatsApp/app)</td><td>Feature phone users, no internet</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A12 ======== -->
+<div class="sec" id="a12">
+  <span class="sec-label" style="background:var(--blue-bg);color:var(--blue)">Section 12</span>
+  <h2>Multilingual Typography System</h2>
+
+  <div class="diagram-block"><span class="highlight">TYPOGRAPHY SYSTEM — INDIAN SCRIPTS</span>
+
+<span class="blue">Font Stack per Script:</span>
+
+<span class="green">Devanagari (Hindi, Marathi)</span>
+Primary: "Noto Sans Devanagari", sans-serif
+Fallback: "Mukta", system-ui
+Size adjustment: 1.0x (same as Latin)
+
+<span class="green">Telugu</span>
+Primary: "Noto Sans Telugu", sans-serif
+Fallback: "Mandali", system-ui
+Size adjustment: 1.05x <span class="comment">(Telugu glyphs are slightly smaller)</span>
+
+<span class="green">Tamil</span>
+Primary: "Noto Sans Tamil", sans-serif
+Fallback: "Catamaran", system-ui
+Size adjustment: 1.0x
+
+<span class="green">Bengali</span>
+Primary: "Noto Sans Bengali", sans-serif
+Fallback: "Hind Siliguri", system-ui
+Size adjustment: 1.0x
+
+<span class="green">Kannada</span>
+Primary: "Noto Sans Kannada", sans-serif
+Size adjustment: 1.05x
+
+<span class="green">Latin (English)</span>
+Primary: "DM Sans", sans-serif
+Size adjustment: 1.0x (base)
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="blue">CSS Implementation:</span>
+
+:root {
+  --font-base: 16px;
+  --font-scale: 1.0;  <span class="comment">/* Adjusted per script */</span>
+}
+
+body[data-lang="te"] { --font-scale: 1.05; }
+body[data-lang="kn"] { --font-scale: 1.05; }
+
+.message-text {
+  font-size: calc(var(--font-base) * var(--font-scale));
+  line-height: 1.7;  <span class="comment">/* Indian scripts need more line height */</span>
+}
+
+<span class="comment">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span class="blue">KEY RULES:</span>
+1. <span class="green">Never truncate</span> Indian text with ellipsis — words break differently
+2. <span class="green">Line height ≥ 1.7</span> for all Indic scripts (matras extend above/below)
+3. <span class="green">Bold works differently</span> — some Indic fonts don't have true bold
+4. <span class="green">Numbers: Use local numerals</span> optionally (१२३ vs 123 in Hindi)
+   But ALWAYS show PNR/phone numbers in Latin digits
+5. <span class="green">Mixed script handling</span>: "Train ₹580 mein" — font must support
+   Latin + Devanagari + Rupee symbol in same line</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A13 ======== -->
+<div class="sec" id="a13">
+  <span class="sec-label" style="background:var(--orange-bg);color:var(--orange)">Section 13</span>
+  <h2>Micro-Interactions & Animation Spec</h2>
+
+  <table>
+    <thead><tr><th>Element</th><th>Animation</th><th>Duration</th><th>Easing</th></tr></thead>
+    <tbody>
+      <tr><td>Agent message appear</td><td>Fade in + slide up from bottom-left</td><td>300ms</td><td>ease-out</td></tr>
+      <tr><td>User message appear</td><td>Fade in + slide up from bottom-right</td><td>200ms</td><td>ease-out</td></tr>
+      <tr><td>Typing indicator</td><td>Three dots pulse (staggered 150ms each)</td><td>1200ms loop</td><td>ease-in-out</td></tr>
+      <tr><td>Result card expand</td><td>Height 0 → auto with opacity fade</td><td>400ms</td><td>cubic-bezier(0.4, 0, 0.2, 1)</td></tr>
+      <tr><td>Quick reply chips</td><td>Scale 0.9 → 1.0 with staggered delay (50ms each)</td><td>250ms</td><td>spring</td></tr>
+      <tr><td>Payment sheet</td><td>Slide up from bottom (translateY: 100% → 0)</td><td>350ms</td><td>cubic-bezier(0.4, 0, 0.2, 1)</td></tr>
+      <tr><td>Booking confirmed ✅</td><td>Checkmark draw + gentle scale bounce</td><td>600ms</td><td>spring</td></tr>
+      <tr><td>Voice waveform</td><td>Bars oscillate based on audio amplitude</td><td>Continuous</td><td>linear</td></tr>
+      <tr><td>Chip selection</td><td>Background color transition + haptic</td><td>150ms</td><td>ease</td></tr>
+      <tr><td>Error shake</td><td>translateX: -4px → 4px → 0 (2 cycles)</td><td>400ms</td><td>ease-in-out</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="divider"></div>
+
+<!-- ======== A14 ======== -->
+<div class="sec" id="a14">
+  <span class="sec-label" style="background:var(--purple-bg);color:var(--purple)">Section 14</span>
+  <h2>Design Tokens & Theme System</h2>
+
+  <div class="diagram-block"><span class="highlight">DESIGN TOKENS — CSS CUSTOM PROPERTIES</span>
+
+<span class="blue">/* Colors — Warm, Trustworthy, Indian */</span>
+--color-primary:        #C84B31;   <span class="comment">/* Warm terracotta — trust, warmth */</span>
+--color-primary-light:  #FFF0EC;
+--color-secondary:      #7C3AED;   <span class="comment">/* Purple — intelligence, agent */</span>
+--color-secondary-light:#F5F3FF;
+--color-success:        #15803D;   <span class="comment">/* Confirmed, available */</span>
+--color-success-light:  #F0FDF4;
+--color-warning:        #B45309;   <span class="comment">/* RAC, waitlist */</span>
+--color-warning-light:  #FFFBEB;
+--color-error:          #DC2626;   <span class="comment">/* Failed, cancelled */</span>
+--color-error-light:    #FEF2F2;
+--color-ink:            #151515;   <span class="comment">/* Primary text */</span>
+--color-muted:          #6B6B6B;   <span class="comment">/* Secondary text */</span>
+--color-bg:             #FAF9F6;   <span class="comment">/* App background — warm white */</span>
+--color-card:           #FFFFFF;
+--color-border:         #E4E4DF;
+
+<span class="blue">/* Typography */</span>
+--font-body:     'DM Sans', sans-serif;
+--font-heading:  'Instrument Serif', serif;
+--font-mono:     'JetBrains Mono', monospace;
+--font-hindi:    'Noto Sans Devanagari', sans-serif;
+--font-telugu:   'Noto Sans Telugu', sans-serif;
+
+<span class="blue">/* Spacing (8px grid) */</span>
+--space-1: 4px;   --space-2: 8px;    --space-3: 12px;
+--space-4: 16px;  --space-5: 20px;   --space-6: 24px;
+--space-8: 32px;  --space-10: 40px;  --space-12: 48px;
+
+<span class="blue">/* Border Radius */</span>
+--radius-sm: 8px;    <span class="comment">/* Buttons, chips */</span>
+--radius-md: 12px;   <span class="comment">/* Cards */</span>
+--radius-lg: 16px;   <span class="comment">/* Modals, sheets */</span>
+--radius-xl: 20px;   <span class="comment">/* Phone frame */</span>
+--radius-full: 9999px; <span class="comment">/* Avatars, pills */</span>
+
+<span class="blue">/* Shadows */</span>
+--shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+--shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+--shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+--shadow-sheet: 0 -4px 20px rgba(0,0,0,0.08);
+
+<span class="blue">/* Z-Index Scale */</span>
+--z-base: 0;        --z-dropdown: 10;
+--z-sticky: 20;     --z-overlay: 30;
+--z-modal: 40;       --z-toast: 50;</div>
+</div>
+
+<div style="text-align:center;padding:40px 0;color:var(--muted);font-size:13px;border-top:1px solid var(--border);margin-top:48px">
+  <strong>YatraAI Agentic UI Design v1.0</strong> — Confidential — April 2026<br>
+  Conversational-First Interface System | Design Specification
+</div>
+
+</div>
+</body>
+</html>
